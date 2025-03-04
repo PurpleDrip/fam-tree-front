@@ -1,0 +1,24 @@
+import axiosInstance from "@/services/axios"
+
+interface Node{
+    name: string;
+    relation: string;
+    gender: string;
+    description: string;
+    dob: string;
+    images: FileList;
+    role: string;
+    treeId: string;
+    position: {
+        x: number;
+        y: number;
+    };
+}
+
+export const addNode = async (node: Node) => {
+    return axiosInstance.post("/addnode", node);
+}
+
+export const updatePosition=async(pos:Node["position"])=>{
+    return axiosInstance.post("/updateposition",pos)
+}
