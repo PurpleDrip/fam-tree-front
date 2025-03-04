@@ -1,7 +1,7 @@
 import axiosInstance from "@/services/axios"
 import IEdge from "@/types/edge";
 
-export const addTree = async (treeName:string) => {
+export const createTree = async (treeName:string) => {
     return axiosInstance.post("/addtree", treeName);
 }
 
