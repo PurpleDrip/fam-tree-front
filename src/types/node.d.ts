@@ -1,4 +1,4 @@
-export interface INode{
+interface INode{
     name:string,
     relationship:string,
     gender:string,
@@ -13,3 +13,5 @@ export interface INode{
     mainImg:string,
 
 }
+
+export default INode;
