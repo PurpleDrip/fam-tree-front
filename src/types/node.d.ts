@@ -1,4 +1,5 @@
 interface INode{
+    id:string
     name:string,
     relationship:string,
     gender:string,
