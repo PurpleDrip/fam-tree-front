@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { addTree, logout as logoutAction, registered } from "@/redux/userSlice";
-import { checkForCookies, logoutUser } from './api/auth';
+import { checkForCookies, logoutUser } from '@/api/auth';
 import { AxiosError } from 'axios';
 
 interface ErrorResponse {
@@ -23,7 +23,6 @@ const Page = () => {
 
   const [openDialog, setOpenDialog] = useState(false);
   const isRegistered = useSelector((state: { isRegistered: boolean }) => state.isRegistered);
-  const treeId=useSelector((state:{treeId:string })=>state.treeId);
   const treeName=useSelector((state:{treeName:string})=>state.treeName)
 
   const createTreeHandler = () => {
@@ -39,20 +38,6 @@ const Page = () => {
     await logoutUser();
     router.push("/login"); 
   };
-
-  useEffect(() => {
-    const checkCookies = async () => {
-      try{
-        const res=await checkForCookies(); 
-        console.log(res);
-        dispatch(registered(true));
-        dispatch(addTree(res.data.data))
-      }catch(e){
-        const err=(e as AxiosError<ErrorResponse>).response?.data?.message;
-      }
-    };
-    checkCookies();
-  }, [])
 
   return (
     <div className="h-screen p-8">
@@ -70,7 +55,7 @@ const Page = () => {
           {isRegistered ? (
             <>
               <Btn onClick={() => router.push("/about-us")}>About Us</Btn>
-              {treeId? 
+              {treeName? 
               <>
                 <Btn onClick={() => router.push(`/tree/${treeName}`)}>View Tree</Btn>
               </> : 
@@ -109,7 +94,7 @@ const Page = () => {
           <h2 className="text-[#00FF00] text-3xl text-center font-thin mt-16">
             Start building your family tree today and create a lasting gift for your loved ones.
           </h2>
-          {treeId ? (
+          {treeName ? (
             <Button className="mt-2" onClick={() => router.push(`/tree/${treeName}`)}>
               View Tree
             </Button>

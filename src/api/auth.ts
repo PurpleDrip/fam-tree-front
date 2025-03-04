@@ -1,7 +1,7 @@
 import axiosInstance from "@/services/axios"
 
-export const loginUser=async(username:string,password:string)=>{
-    return axiosInstance.post("/auth/login",{username,password})
+export const loginUser=async(data:{username:string,password:string})=>{
+    return axiosInstance.post("/auth/login",data)
 }
 
 export const registerUser = async (userData: {

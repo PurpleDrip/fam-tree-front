@@ -1,5 +1,6 @@
 import IEdge from "@/types/edge";
 import INode from "@/types/node";
+import { ITree } from "@/types/tree";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface UserState {
@@ -23,10 +24,10 @@ export const userSlice = createSlice({
         registered: (state, action: PayloadAction<boolean>) => {
             state.isRegistered = action.payload;
         },
-        addTree: (state, action: PayloadAction<UserState>) => {
-            state.nodes=action.payload.nodes;
-            state.treeName = action.payload.treeName;
-            state.edges=action.payload.edges
+        addTree: (state, action: PayloadAction<ITree | null>) => {
+            state.nodes=action.payload?.nodes || [];
+            state.treeName = action.payload?.treeName || "";
+            state.edges=action.payload?.edges || []
         },
         logout:(state)=>{
             state.isRegistered= false;

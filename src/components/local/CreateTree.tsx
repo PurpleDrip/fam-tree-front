@@ -13,7 +13,7 @@ import { Input } from '../ui/input'
 import { createTree } from '@/api/tree'
 import { AxiosError } from 'axios'
 import { useDispatch } from 'react-redux'
-import { createdTree } from '@/redux/userSlice'
+import { addTree } from '@/redux/userSlice'
 import { ITree } from '@/types/tree'
 
 interface CreateTreeProps {
@@ -35,9 +35,9 @@ const CreateTree =({ open, onOpenChange }: CreateTreeProps) => {
 
         try{
           console.log(treeName)
-          const res=await createTree(treeName);
+          const res=await createTree(treeName as string);
           const tree=res.data?.tree as ITree | null;
-          dispatch(createdTree({treeId:tree.id as string,treeName:tree.name}))
+          dispatch(addTree(tree))
           onOpenChange(false);
         }catch(e){
           const error=(e as AxiosError<ErrorResponse>).response?.data?.message;

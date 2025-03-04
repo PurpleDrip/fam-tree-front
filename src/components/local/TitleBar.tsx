@@ -1,7 +1,7 @@
 import React from 'react'
 import SearchTree from './SearchTree'
 import Button from './Button'
-import { Settings, Settings2, Share2 } from 'lucide-react'
+import { Settings,  Share2 } from 'lucide-react'
 
 const TitleBar = ({treeName}:{treeName?:string}) => {
   return (

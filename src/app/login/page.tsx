@@ -17,10 +17,10 @@ import { FcGoogle } from "react-icons/fc";
 import { RiFacebookCircleFill } from "react-icons/ri";
 import Drawer from "@/components/local/DrawerBox";
 import { loginUser } from "@/api/auth";
-import { AxiosError } from "axios";
 import { addTree, registered } from "@/redux/userSlice";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
+import { AxiosError } from "axios";
 
 export default function Home() {
   const router = useRouter();
@@ -45,11 +45,13 @@ export default function Home() {
     const data = Object.fromEntries(formData) as unknown as Data;
     try {
       const res = await loginUser(data);
-      const tree=res.data.data;
+      console.log(res)
+      const tree=res?.data?.data;
       dispatch(addTree(tree));
       dispatch(registered(true));
       router.push("/")
     } catch (e) {
+      console.log(e)
       const err = (e as AxiosError<ErrorResponse>).response?.data?.message || "An error occurred";
       setErrorMsg(err);
     }

@@ -26,7 +26,7 @@ import  Calendar  from "@/components/local/Calender";
 import { FcGoogle } from "react-icons/fc";
 import { RiFacebookCircleFill } from "react-icons/ri";
 import DrawerBox from "@/components/local/DrawerBox";
-import { registerUser } from "../api/auth";
+import { registerUser } from "@/api/auth";
 import { AxiosError } from "axios";
 import { useDispatch} from "react-redux";
 import { addTree, registered } from "@/redux/userSlice";
