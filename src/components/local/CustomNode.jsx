@@ -2,6 +2,7 @@ import React from "react";
 import { Handle, Position } from "@xyflow/react";
 import { Mars, Pencil, Trash, Venus } from "lucide-react";
 
+
 const NodeComponent = ({ 
   id, 
   data,
@@ -17,6 +18,7 @@ const NodeComponent = ({
   return (
     <div 
       className="relative p-3 rounded-lg text-white min-w-max transition-transform duration-200 bg-[#2c5340] shadow-2xl"
+      key={id}
     >
       <div className="flex items-start justify-center gap-8">
         <div>
@@ -49,9 +51,9 @@ const NodeComponent = ({
       </div>
       
       <div className="flex items-center justify-center gap-2 mt-2">
-        <button className="text-xs px-4 py-2 bg-[#00ff0018] text-[#00ff00] rounded-full cursor-pointer hover:bg-[#00ff0052]">View Photos</button>
+        <a href={`/tree/view-images/?nodeId=${id}`} className="text-xs px-4 py-2 bg-[#00ff0018] text-[#00ff00] rounded-full cursor-pointer hover:bg-[#00ff0052]">View Photos</a>
         {mode!=="view" && <button className="text-xs px-4 py-2 bg-[#00ff0018] text-[#00ff00] rounded-full cursor-pointer hover:bg-[#00ff0052]">Add Photos</button>}
-        {mode!=="view" && <button className="text-xs px-4 py-2 bg-[#00ff0018] text-[#00ff00] rounded-full cursor-pointer hover:bg-[#00ff0052]">Change DP</button>}
+        {mode!=="view" && <a href={`/tree/view-images/?nodeId=${id}&mode=edit`} className="text-xs px-4 py-2 bg-[#00ff0018] text-[#00ff00] rounded-full cursor-pointer hover:bg-[#00ff0052]">Change DP</a>}
       </div>
 
       <div className="flex items-center justify-center gap-2 mt-2">
