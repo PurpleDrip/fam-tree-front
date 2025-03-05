@@ -16,9 +16,14 @@ import { Textarea } from '../ui/textarea'
 import { Button } from '../ui/button'
 import axios from 'axios'
 import { useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
+import { addTree } from '@/redux/userSlice'
+import { formatNodes } from '@/lib/formatNode'
 
 
 const AddNode = () => {
+    const dispatch =useDispatch();
+
     const treeId = useSelector((state: {treeId:string}) => state.treeId)
     const [gender, setGender] = useState("");
     const [birthdate, setBirthdate] = useState<string | undefined>(undefined);
@@ -61,9 +66,15 @@ const AddNode = () => {
         try {
             const response = await axios.post("http://localhost:5000/api/node/addnode", data, {
                 headers: { "Content-Type": "multipart/form-data" },
+                withCredentials:true,
             });
-    
-            console.log("Response:", response.data);
+            const tree=response.data.data;
+            console.log("Response:", tree);
+            const formatedNodes=formatNodes(tree.nodes);
+
+            console.log(formatedNodes)
+
+            dispatch(addTree({nodes:formatedNodes,treeName:tree.treeName,edges:tree.edges}))
             alert("Node added successfully!");
         } catch (error) {
             console.error("Error submitting form:", error);
@@ -72,9 +83,9 @@ const AddNode = () => {
     };
 
     return (
-        <div className='absolute right-8 top-20 bg-[#00ff0018] border border-[#00ff0018] cursor-pointer text-[#00ff00] px-4 py-2 rounded-full hover:border-[#00ff00] z-2'>
+        <div className='absolute right-8 top-20 bg-[#00ff00] border border-[#00ff0018] cursor-pointer text-black px-4 py-2 rounded-full hover:bg-[#00ff00c0] z-2'>
             <Dialog>
-                <DialogTrigger>Add Node</DialogTrigger>
+                <DialogTrigger className='cursor-pointer'>Add Node</DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle className='mb-4 text-3xl text-[#00ff00]'>Create Node</DialogTitle>

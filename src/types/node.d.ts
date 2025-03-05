@@ -1,9 +1,10 @@
 interface INode{
     id:string,
-    type:custom,
+    type:"custom",
     data:{
+        id:string,
         name:string,
-        relationship:string,
+        relation:string,
         gender:string,
         description:string,
         dob:string,
