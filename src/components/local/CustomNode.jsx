@@ -1,10 +1,11 @@
 import React from "react";
 import { Handle, Position } from "@xyflow/react";
-import { Mars, Venus } from "lucide-react";
+import { Mars, Pencil, Trash, Venus } from "lucide-react";
 
 const NodeComponent = ({ 
   id, 
-  data, 
+  data,
+  mode="normal"
 }) => {
     const words = data["description"].split(" ");
     let formattedText = [];
@@ -43,16 +44,22 @@ const NodeComponent = ({
               </span>
             ))}
           </p>
+          <h1 className="text-center text-sm mt-2">22 Oct 2004</h1>
         </div>
       </div>
       
-      <div className="flex items-center justify-end gap-2 ml-20 mt-2">
+      <div className="flex items-center justify-center gap-2 mt-2">
         <button className="text-xs px-4 py-2 bg-[#00ff0018] text-[#00ff00] rounded-full cursor-pointer hover:bg-[#00ff0052]">View Photos</button>
-        <button className="text-xs px-4 py-2 bg-[#00ff0018] text-[#00ff00] rounded-full cursor-pointer hover:bg-[#00ff0052]">Add Photos</button>
+        {mode!=="view" && <button className="text-xs px-4 py-2 bg-[#00ff0018] text-[#00ff00] rounded-full cursor-pointer hover:bg-[#00ff0052]">Add Photos</button>}
+        {mode!=="view" && <button className="text-xs px-4 py-2 bg-[#00ff0018] text-[#00ff00] rounded-full cursor-pointer hover:bg-[#00ff0052]">Change DP</button>}
       </div>
 
+      <div className="flex items-center justify-center gap-2 mt-2">
+        <div className="bg-[#00ff007a] rounded-full px-4 py-1 cursor-pointer flex items-center justify-center text-sm gap-1"><Pencil size={12}/>Edit</div>
+        <div className="bg-red-400 rounded-full cursor-pointer px-4 py-1 flex items-center justify-center text-sm gap-1"><Trash size={12}/>Delete</div>
+      </div>
 
-      {data?.role && <p className="text-center px-2 py-1 bg-[#00ff00] text-black font-semibold rounded-full text-xs max-w-min absolute top-2 right-2">{data.role}</p>}
+      {mode!=="view" && <p className="text-center px-2 py-1 bg-[#00ff00] text-black font-semibold rounded-full text-xs max-w-min absolute top-2 right-2">{data.role}</p>}
       {/* Handles */}
       <Handle 
         type="source" 
