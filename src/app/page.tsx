@@ -57,7 +57,7 @@ const Page = () => {
               <Btn onClick={() => router.push("/about-us")}>About Us</Btn>
               {treeName? 
               <>
-                <Btn onClick={() => router.push(`/tree/${treeName}`)}>View Tree</Btn>
+                <Btn onClick={() => router.push(`/tree`)}>View Tree</Btn>
               </> : 
               <>
                 <Btn onClick={createTreeHandler}>Create Tree</Btn>
@@ -95,7 +95,7 @@ const Page = () => {
             Start building your family tree today and create a lasting gift for your loved ones.
           </h2>
           {treeName ? (
-            <Button className="mt-2" onClick={() => router.push(`/tree/${treeName}`)}>
+            <Button className="mt-2" onClick={() => router.push(`/tree`)}>
               View Tree
             </Button>
           ) : (
