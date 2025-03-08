@@ -54,7 +54,6 @@ const Page = () => {
         <div className="flex gap-4 items-center justify-center">
           {isRegistered ? (
             <>
-              <Btn onClick={() => router.push("/about-us")}>About Us</Btn>
               {treeName? 
               <>
                 <Btn onClick={() => router.push(`/tree`)}>View Tree</Btn>
