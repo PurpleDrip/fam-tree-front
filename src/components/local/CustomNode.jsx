@@ -2,6 +2,8 @@ import React from "react";
 import { Handle, Position } from "@xyflow/react";
 import { Mars, Pencil, Trash, Venus } from "lucide-react";
 
+import EditNode from "./EditNode";
+
 
 const NodeComponent = ({ 
   id, 
@@ -57,8 +59,8 @@ const NodeComponent = ({
       </div>
 
       <div className="flex items-center justify-center gap-2 mt-2">
-        <div className="bg-[#00ff007a] rounded-full px-4 py-1 cursor-pointer flex items-center justify-center text-sm gap-1"><Pencil size={12}/>Edit</div>
-        <div className="bg-red-400 rounded-full cursor-pointer px-4 py-1 flex items-center justify-center text-sm gap-1"><Trash size={12}/>Delete</div>
+        <EditNode node={data}/>
+        <div className="bg-red-400 rounded-full cursor-pointer px-4 py-1 flex items-center justify-center text-sm gap-1 hover:bg-red-500"><Trash size={12}/>Delete</div>
       </div>
 
       {mode!=="view" && <p className="text-center px-2 py-1 bg-[#00ff00] text-black font-semibold rounded-full text-xs max-w-min absolute top-2 right-2">{data.role}</p>}
