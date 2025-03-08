@@ -22,3 +22,7 @@ export const addNode = async (node: Node) => {
 export const updatePosition=async(pos:Node["position"])=>{
     return axiosInstance.post("/updateposition",pos)
 }
+
+export const changeMainImg=async(url:string,nodeId:string)=>{
+    return axiosInstance.post("/changedp",{url,nodeId})
+}
