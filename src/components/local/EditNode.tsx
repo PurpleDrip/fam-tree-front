@@ -22,15 +22,10 @@ import {
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
-import axios from "axios";
-import { useDispatch } from "react-redux";
 import { Pencil } from "lucide-react";
 import INode from "@/types/node";
 
 const EditNode = ({ node }: { node: INode["data"] }) => {
-  const dispatch = useDispatch();
-
-  // State variables for form inputs
   const [name, setName] = useState(node.name);
   const [relation, setRelation] = useState(node.relation);
   const [dob, setBirthdate] = useState(node.dob);

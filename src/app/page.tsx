@@ -3,20 +3,13 @@
 import CreateTree from '@/components/local/CreateTree';
 import Btn from '@/components/local/Button';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
-import { addTree, logout as logoutAction, registered } from "@/redux/userSlice";
-import { checkForCookies, logoutUser } from '@/api/auth';
-import { AxiosError } from 'axios';
+import { logout as logoutAction} from "@/redux/userSlice";
+import {  logoutUser } from '@/api/auth';
 import SearchTree from '@/components/local/SearchTree';
-
-interface ErrorResponse {
-  message: string;
-}
 
 const Page = () => {
   const dispatch = useDispatch();

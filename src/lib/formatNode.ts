@@ -1,6 +1,23 @@
 import INode from "@/types/node";
 
-export const formatNodes = (nodes: any[]): INode[] => {
+interface defaultNode{
+    _id:string,
+    name:string,
+    relation:string,
+    gender:string,
+    description:string,
+    dob:string,
+    images:Array<string>,
+    mainImg:string,
+    role:string,
+    treeId:string,
+    position:{
+        x:number,
+        y:number,
+    } 
+}
+
+export const formatNodes = (nodes: defaultNode[]): INode[] => {
     return nodes.map(node => ({
         id: node._id,
         type: "custom",
