@@ -68,7 +68,7 @@ const Page = () => {
                       Current DP
                     </button>
                   ) : (
-                    <div className="flex absolute bottom-4 items-center justify-between w-full px-4">
+                    <div className="flex absolute bottom-4 items-center justify-between w-full px-4" key={index * 10}>
                       <button className="bg-red-400 p-2 rounded-full shadow-2xl cursor-pointer hover:bg-red-500">
                         <Trash size={16} />
                       </button>

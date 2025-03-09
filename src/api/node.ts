@@ -30,3 +30,7 @@ export const changeMainImg=async(url:string,nodeId:string)=>{
 export const getImagesForID=async(nodeId:string)=>{
     return axiosInstance.get(`/node/getimagesbyid/${nodeId}`);
 }
+
+export const deleteNode=async(id:string)=>{
+    return axiosInstance.post("/node/deletenode",{id})
+}

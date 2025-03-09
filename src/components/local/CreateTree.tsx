@@ -15,6 +15,7 @@ import { AxiosError } from 'axios'
 import { useDispatch } from 'react-redux'
 import { addTree, createdTree } from '@/redux/userSlice'
 import { ITree } from '@/types/tree'
+import { useRouter } from 'next/navigation'
 
 interface CreateTreeProps {
   open: boolean;
@@ -40,6 +41,7 @@ const CreateTree =({ open, onOpenChange }: CreateTreeProps) => {
           dispatch(addTree(tree))
           dispatch(createdTree(treeName))
           onOpenChange(false);
+          useRouter().push("/tree");
         }catch(e){
           const error=(e as AxiosError<ErrorResponse>).response?.data?.message;
           setError(error || "")

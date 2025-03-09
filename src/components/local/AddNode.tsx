@@ -25,6 +25,7 @@ const AddNode = () => {
     const dispatch =useDispatch();
 
     const treeId = useSelector((state: {treeId:string}) => state.treeId)
+    const [open, setOpen] = useState(false);
     const [gender, setGender] = useState("");
     const [birthdate, setBirthdate] = useState<string | undefined>(undefined);
     const [role, setRole] = useState<string | undefined>("");
@@ -76,15 +77,17 @@ const AddNode = () => {
 
             dispatch(addTree({nodes:formatedNodes,treeName:tree.treeName,edges:tree.edges}))
             alert("Node added successfully!");
+            setOpen(false); 
         } catch (error) {
             console.error("Error submitting form:", error);
             alert("Error adding node.");
+            setOpen(false); 
         }
     };
 
     return (
         <div className='absolute right-8 top-20 bg-[#00ff00] border border-[#00ff0018] cursor-pointer text-black px-4 py-2 rounded-full hover:bg-[#00ff00c0] z-2'>
-            <Dialog>
+            <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger className='cursor-pointer'>Add Node</DialogTrigger>
                 <DialogContent>
                     <DialogHeader>

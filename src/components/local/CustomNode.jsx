@@ -1,9 +1,10 @@
 import React from "react";
 import { Handle, Position } from "@xyflow/react";
-import { Mars, Pencil, Trash, Venus } from "lucide-react";
+import { Mars, Transgender, Venus } from "lucide-react";
 
 import EditNode from "./EditNode";
-
+import DeleteNode from "./DeleteNode"
+import ChangeRole from "./ChangeRole"
 
 const NodeComponent = ({ 
   id, 
@@ -36,7 +37,7 @@ const NodeComponent = ({
             <h3 className="font-bold text-left text-xl">{data?.name}</h3>
             <div className="text-white">
               {
-                data.gender==="male"? <Mars size={16}/> :  <Venus size={16}/>
+                data.gender==="male"? <Mars size={16}/> :  data.gender==="female"? <Venus size={16}/> : <Transgender size={16}/>
               }
             </div>
           </div>
@@ -54,14 +55,14 @@ const NodeComponent = ({
       </div>
       
       <div className="flex items-center justify-center gap-2 mt-2">
-        <a href={`/tree/view-images/?nodeId=${id}`} className="text-xs px-4 py-2 bg-[#00ff0018] text-[#00ff00] rounded-full cursor-pointer hover:bg-[#00ff0052]">View Photos</a>
+        <ChangeRole/>
         {mode!=="view" && <a href={`/tree/view-images/?nodeId=${id}&mode=edit`} className="text-xs px-4 py-2 bg-[#00ff0018] text-[#00ff00] rounded-full cursor-pointer hover:bg-[#00ff0052]">Edit Photos</a>}
       </div>
 
       { mode!=="view" &&
       <div className="flex items-center justify-center gap-2 mt-2">
         <EditNode node={data}/>
-        <div className="bg-red-400 rounded-full cursor-pointer px-4 py-1 flex items-center justify-center text-sm gap-1 hover:bg-red-500"><Trash size={12}/>Delete</div>
+        <DeleteNode id={data.id}/>
       </div>
       }
 
