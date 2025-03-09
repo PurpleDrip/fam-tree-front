@@ -98,8 +98,7 @@ const Page = () => {
           >
             <ChevronLeft size={40} />
           </div>
-          {/* Add Image Button */}
-          <AddImages />
+          {mode==="edit" && <AddImages />}
         </div>
       </div>
     </div>

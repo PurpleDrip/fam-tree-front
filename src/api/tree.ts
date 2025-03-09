@@ -1,5 +1,6 @@
 import axiosInstance from "@/services/axios"
 import IEdge from "@/types/edge";
+import INode from "@/types/node";
 
 export const createTree = async (treeName:string) => {
     return axiosInstance.post("/addtree", {treeName});
@@ -23,4 +24,8 @@ export const addEdge=async(edge:Partial<IEdge>)=>{
 
 export const updateEdge=async(edges:Array<IEdge>)=>{
     return axiosInstance.post("/updateedge",edges)
+}
+
+export const updateTree=async(nodes:Array<INode>,edges:Array<IEdge>)=>{
+    return axiosInstance.put("/updatetree",{nodes,edges})
 }

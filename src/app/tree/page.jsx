@@ -15,6 +15,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import { useCallback, useEffect, useState, useRef } from "react";
 import { updateNodes, updateEdges } from "@/redux/userSlice";
+import {updateTree} from "@/api/tree"
 
 function Flow() {
   const dispatch = useDispatch();
@@ -107,7 +108,8 @@ function Flow() {
     dispatch(updateNodes(nodes)); // ✅ Update Redux
     dispatch(updateEdges(edges)); // ✅ Update Redux
     try {
-      // await axios.put("/api/tree", { nodes, edges }); // ✅ Save to DB
+      const res=await updateTree(nodes,edges);
+      console.log(res)
       setChanges(false); // Reset change tracker
       
       // Update original references after save
