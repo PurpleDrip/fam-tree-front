@@ -64,36 +64,37 @@ const Page = () => {
         </div>
       </section>
       <section className="h-[80vh] m-12 flex items-center justify-between">
-        <div className="w-1/2 flex flex-col gap-4 items-center">
-          <h1 className="text-5xl font-semibold">
-            Welcome to Fam Tree – Where Your Family's Story Comes to Life
-          </h1>
-          <p className="text-gray-300">
-            Preserve your family's legacy in a beautiful, interactive family tree. Add photos, stories, and
-            connections to create a living digital archive that can be shared with generations to come.
-          </p>
-          <p className="text-gray-300">
-            Easily add family members, upload cherished photos, and watch your family's history unfold in an
-            elegant, visual format. Whether you're documenting your immediate family or tracing your ancestry back
-            through generations, Fam Tree gives you the tools to capture and celebrate your unique family story.
-          </p>
-          <h2 className="text-[#00FF00] text-3xl text-center font-thin mt-16">
-            Start building your family tree today and create a lasting gift for your loved ones.
-          </h2>
-          {treeName ? (
-            <Button className="mt-2" onClick={() => router.push(`/tree`)}>
-              View Tree
-            </Button>
-          ) : (
-            <Button className="mt-2" onClick={createTreeHandler}>
-              Create Tree
-            </Button>
-          )}
-        </div>
-        <div className="border">
-          <Image src="/Images/hero_image1.jpeg" width="450" height="100" alt="Image of a family" />
-        </div>
-      </section>
+  <div className="w-1/2 flex flex-col gap-4 items-center">
+    <h1 className="text-5xl font-semibold">
+      Welcome to Fam Tree - Where Your Family&rsquo;s Story Comes to Life
+    </h1>
+    <p className="text-gray-300">
+      Preserve your family&rsquo;s legacy in a beautiful, interactive family tree. Add photos, stories, and
+      connections to create a living digital archive that can be shared with generations to come.
+    </p>
+    <p className="text-gray-300">
+      Easily add family members, upload cherished photos, and watch your family&rsquo;s history unfold in an
+      elegant, visual format. Whether you&rsquo;re documenting your immediate family or tracing your ancestry back
+      through generations, Fam Tree gives you the tools to capture and celebrate your unique family story.
+    </p>
+    <h2 className="text-[#00FF00] text-3xl text-center font-thin mt-16">
+      Start building your family tree today and create a lasting gift for your loved ones.
+    </h2>
+    {treeName ? (
+      <Button className="mt-2" onClick={() => router.push(`/tree`)}>
+        View Tree
+      </Button>
+    ) : (
+      <Button className="mt-2" onClick={createTreeHandler}>
+        Create Tree
+      </Button>
+    )}
+  </div>
+  <div className="border">
+    <Image src="/Images/hero_image1.jpeg" width="450" height="100" alt="Image of a family" />
+  </div>
+</section>
+
       <CreateTree open={openDialog} onOpenChange={setOpenDialog} />
     </div>
   );
