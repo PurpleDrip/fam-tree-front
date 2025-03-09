@@ -26,3 +26,7 @@ export const updatePosition=async(pos:Node["position"])=>{
 export const changeMainImg=async(url:string,nodeId:string)=>{
     return axiosInstance.post("/changedp",{url,nodeId})
 }
+
+export const getImagesForID=async(nodeId:string)=>{
+    return axiosInstance.get(`/node/getimagesbyid/${nodeId}`);
+}

@@ -14,7 +14,7 @@ export const getTreeById=async(id:string)=>{
 }
 
 export const getTreeByName=async(treeName:string)=>{
-    return axiosInstance.get(`/tree/${treeName}`)
+    return axiosInstance.get(`/treebyname/${treeName}`)
 }
 
 export const addEdge=async(edge:Partial<IEdge>)=>{

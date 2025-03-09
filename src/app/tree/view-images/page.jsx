@@ -3,16 +3,21 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation"; 
 import { useSelector } from "react-redux";
-import { ChevronLeft } from "lucide-react";
-import { useRouter } from 'next/navigation';
+import { ChevronLeft, Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-import {changeMainImg} from "@/api/node"
+import { changeMainImg, getImagesForID } from "@/api/node";
+import AddImages from "@/components/local/AddImages";
 
 const Page = () => {
   const router = useRouter();
+  const searchParams = useSearchParams(); 
+
   const [nodeId, setNodeId] = useState("");
   const [mode, setMode] = useState("");
-  const searchParams = useSearchParams(); 
+  const [error, setError] = useState("");
+  const [node, setNode] = useState(null);
+  const [mainImg, setMainImg] = useState("");
 
   useEffect(() => {
     const nodeIdParam = searchParams.get("nodeId");
@@ -22,45 +27,57 @@ const Page = () => {
     if (modeParam) setMode(modeParam);
   }, [searchParams]);
 
-  const nodes = useSelector((state) => state.nodes);
+  useEffect(() => {
+      getImagesForID(nodeId)
+        .then((res) => {
+          setMainImg(res.data.mainImg)
+          setNode(res.data.data)})
+        .catch((err) => {
+          console.log(err);
+          setError(err.response?.data?.message || "Failed to fetch images.");
+        });
+  }, [nodeId]);
 
-  const node = nodes.find((n) => n.id === nodeId);
+  console.log(node)
 
-  console.log(node?.data?.mainImg); 
-
-  const handleSubmit=async(imgUrl)=>{
-    console.log(imgUrl)
-
-    try{
-      const response=await changeMainImg(imgUrl,nodeId)
-    }catch(err){
-      console.log(err.response.data.message)
+  const handleSubmit = async (imgUrl) => {
+    console.log(imgUrl);
+    try {
+      await changeMainImg(imgUrl, nodeId);
+      setNode((prev) => ({ ...prev, data: { ...prev.data, mainImg: imgUrl } }));
+    } catch (err) {
+      console.log(err.response?.data?.message || "Something went wrong");
     }
-  }
+  };
 
   return (
     <div className="p-6 min-h-screen bg-black">
       {node ? (
         <>
           <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4 mt-12">
-            {node.data?.images?.map((img, index) => (
-              <div className="relative" key={index}>
+            {node.map((img, index) => (
+              <div className="relative" key={img || index}>
                 <img
                   src={img}
                   alt=""
                   className="w-full rounded-lg shadow-lg border-2 border-[#00ff0050] p-2"
                 />
                 {mode === "edit" && (
-                  img === node.data.mainImg ? (
+                  img === mainImg ? (
                     <button className="absolute bottom-4 right-3 bg-[#00ff00] px-4 py-1 rounded-full text-sm text-black font-semibold cursor-not-allowed">
                       Current DP
                     </button>
                   ) : (
-                    <button 
-                      className="absolute bottom-4 right-3 bg-[#00ff00] shadow-2xl px-4 py-1 rounded-full text-sm text-black font-semibold cursor-pointer hover:bg-[#7cd67c]"
-                      onClick={() => handleSubmit(img)}>
-                      Set As DP
-                    </button>
+                    <div className="flex absolute bottom-4 items-center justify-between w-full px-4">
+                      <button className="bg-red-400 p-2 rounded-full shadow-2xl cursor-pointer hover:bg-red-500">
+                        <Trash size={16} />
+                      </button>
+                      <button 
+                        className="bg-[#00ff00] shadow-2xl px-4 py-1 rounded-full text-sm text-black font-semibold cursor-pointer hover:bg-[#7cd67c]"
+                        onClick={() => handleSubmit(img)}>
+                        Set As DP
+                      </button>
+                    </div>
                   )
                 )}
               </div>
@@ -68,7 +85,7 @@ const Page = () => {
           </div>
         </>
       ) : (
-        <p>No node found for this ID.</p>
+        <p className="mt-[50vh] flex text-center">{error || "No images found for this ID."}</p>
       )}
 
       {/* Top Navigation */}
@@ -82,9 +99,7 @@ const Page = () => {
             <ChevronLeft size={40} />
           </div>
           {/* Add Image Button */}
-          <button className="px-4 py-2 bg-[#00ff00] text-[#000000] rounded-full text-sm font-semibold hover:bg-[#00ff00b9]">
-            Add Image
-          </button>
+          <AddImages />
         </div>
       </div>
     </div>

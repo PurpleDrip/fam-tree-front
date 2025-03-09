@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { addTree, logout as logoutAction, registered } from "@/redux/userSlice";
 import { checkForCookies, logoutUser } from '@/api/auth';
 import { AxiosError } from 'axios';
+import SearchTree from '@/components/local/SearchTree';
 
 interface ErrorResponse {
   message: string;
@@ -43,14 +44,7 @@ const Page = () => {
     <div className="h-screen p-8">
       <section className="text-4xl flex items-center justify-between">
         <div className="text-[#00FF00]">FamTree</div>
-        <div>
-          <form className="border p-1 rounded-full flex gap-1">
-            <Input className="rounded-full border-0 outline-0" placeholder="Search a FamTree" />
-            <button type="submit" className="flex items-center justify-center text-sm px-2">
-              <Search />
-            </button>
-          </form>
-        </div>
+        <SearchTree/>
         <div className="flex gap-4 items-center justify-center">
           {isRegistered ? (
             <>
