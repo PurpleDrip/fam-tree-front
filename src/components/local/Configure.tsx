@@ -31,7 +31,7 @@ const Configure = () => {
     checkCookies();
   }, [dispatch])
 
-  return ;
+  return null;
 }
 
 export default Configure
