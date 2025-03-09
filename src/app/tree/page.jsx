@@ -1,6 +1,5 @@
 "use client";
 
-import AddNode from "@/components/local/AddNode";
 import NodeComponent from "@/components/local/CustomNode";
 import TitleBar from "@/components/local/TitleBar";
 import { useSelector, useDispatch } from "react-redux";
@@ -16,6 +15,7 @@ import "@xyflow/react/dist/style.css";
 import { useCallback, useEffect, useState, useRef } from "react";
 import { updateNodes, updateEdges } from "@/redux/userSlice";
 import {updateTree} from "@/api/tree"
+import Tools from "@/components/local/Tools"
 
 function Flow() {
   const dispatch = useDispatch();
@@ -139,7 +139,7 @@ function Flow() {
       </ReactFlow>
 
       <TitleBar treeName={treeName} />
-      <AddNode />
+      <Tools/>
 
       {changes && (
         <div className="bg-[#00ff00] absolute min-w-max top-28 left-1/2 px-8 rounded-xl -translate-x-1/2 -translate-y-1/2">

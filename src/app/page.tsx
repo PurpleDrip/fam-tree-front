@@ -85,7 +85,7 @@ const Page = () => {
         View Tree
       </Button>
     ) : (
-      <Button className="mt-2" onClick={createTreeHandler}>
+      <Button className="mt-2 cursor-pointer" onClick={createTreeHandler}>
         Create Tree
       </Button>
     )}

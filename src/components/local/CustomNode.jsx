@@ -55,7 +55,8 @@ const NodeComponent = ({
       </div>
       
       <div className="flex items-center justify-center gap-2 mt-2">
-        <ChangeRole/>
+        {mode==="view" && <a href={`/tree/view-images/?nodeId=${id}`} className="text-xs px-4 py-2 bg-[#00ff0018] text-[#00ff00] rounded-full cursor-pointer hover:bg-[#00ff0052]">View Photos</a>}
+        {mode!=="view" && <ChangeRole/>}
         {mode!=="view" && <a href={`/tree/view-images/?nodeId=${id}&mode=edit`} className="text-xs px-4 py-2 bg-[#00ff0018] text-[#00ff00] rounded-full cursor-pointer hover:bg-[#00ff0052]">Edit Photos</a>}
       </div>
 

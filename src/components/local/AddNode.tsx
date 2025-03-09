@@ -86,7 +86,7 @@ const AddNode = () => {
     };
 
     return (
-        <div className='absolute right-8 top-20 bg-[#00ff00] border border-[#00ff0018] cursor-pointer text-black px-4 py-2 rounded-full hover:bg-[#00ff00c0] z-2'>
+        <div className=' bg-[#00ff00] cursor-pointer text-black px-2 py-1 font-semibold text-sm rounded-full hover:bg-[#00ff008e]'>
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger className='cursor-pointer'>Add Node</DialogTrigger>
                 <DialogContent>
