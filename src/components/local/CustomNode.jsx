@@ -50,7 +50,7 @@ const NodeComponent = ({
               </span>
             ))}
           </p>
-          <h1 className="text-center text-sm mt-2">22 Oct 2004</h1>
+          <h1 className="text-center text-sm mt-2">{data.dob}</h1>
         </div>
       </div>
       

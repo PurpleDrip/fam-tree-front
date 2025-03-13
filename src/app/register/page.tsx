@@ -43,7 +43,7 @@ export default function Register() {
   const [errorMsg, setErrorMsg] = React.useState<string>("");
 
   const [gender, setGender] = React.useState("");
-  const [birthdate, setBirthdate] = React.useState<string | undefined>(undefined);
+  const [birthdate, setBirthdate] = React.useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -89,16 +89,19 @@ export default function Register() {
               </div>
               <div className="flex flex-col space-y-1.5 min-w-max">
                 <Label htmlFor="birthdate">Birthdate</Label>
-                <Calendar selectedDate={birthdate} onChange={setBirthdate} />
+                <Calendar 
+                  selectedDate={birthdate} 
+                  uponChange={(date) => setBirthdate(date || '')} 
+                />
               </div>
-              <div className="flex flex-col space-y-1.5">
+              <div className="space-y-1.5">
                 <Label htmlFor="gender">Gender</Label>
                 <Select onValueChange={setGender}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a gender" />
+                    <SelectValue placeholder="Select a gender"/>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectGroup>
+                    <SelectGroup >
                       <SelectLabel>Genders</SelectLabel>
                       <SelectItem value="male">Male</SelectItem>
                       <SelectItem value="female">Female</SelectItem>

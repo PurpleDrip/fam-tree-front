@@ -27,7 +27,7 @@ const AddNode = () => {
     const treeId = useSelector((state: {treeId:string}) => state.treeId)
     const [open, setOpen] = useState(false);
     const [gender, setGender] = useState("");
-    const [birthdate, setBirthdate] = useState<string | undefined>(undefined);
+    const [birthdate, setBirthdate] = useState<string| null>(null);
     const [role, setRole] = useState<string | undefined>("");
     const [formData, setFormData] = useState({
         name: "",
@@ -119,7 +119,7 @@ const AddNode = () => {
                             </div>
                             <div className="flex flex-col space-y-1.5 min-w-max">
                                 <Label htmlFor="birthdate">Birthdate</Label>
-                                <Calender selectedDate={birthdate} onChange={setBirthdate} />
+                                <Calender selectedDate={birthdate} uponChange={(date)=>setBirthdate(date || "")} />
                             </div>
                             <div className="grid w-full gap-1.5">
                                 <Label htmlFor="description">Description</Label>

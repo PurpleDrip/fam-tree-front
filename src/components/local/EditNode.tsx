@@ -40,7 +40,7 @@ const EditNode = ({ node }: { node: INode["data"] }) => {
 
     try {
       const updatedNode = {
-        id: node.id, // Ensure the node ID is included
+        id: node.id,
         name,
         relation,
         dob,
@@ -126,7 +126,7 @@ const EditNode = ({ node }: { node: INode["data"] }) => {
                 <Label htmlFor="birthdate">Birthdate</Label>
                 <Calender 
                   selectedDate={dob} 
-                  onChange={(date: string | undefined) => setBirthdate(date || '')} 
+                  uponChange={(date) => setBirthdate(date || '')} 
                 />
               </div>
 
