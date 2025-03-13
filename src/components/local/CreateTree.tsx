@@ -27,6 +27,7 @@ interface ErrorResponse {
 }
 
 const CreateTree =({ open, onOpenChange }: CreateTreeProps) => {
+    const router=useRouter();
     const dispatch=useDispatch();
     const [treeName, setTreeName] = useState("");
     const [error, setError] = useState<string>("");
@@ -41,7 +42,7 @@ const CreateTree =({ open, onOpenChange }: CreateTreeProps) => {
           dispatch(addTree(tree))
           dispatch(createdTree(treeName))
           onOpenChange(false);
-          useRouter().push("/tree");
+          router.push("/tree");
         }catch(e){
           const error=(e as AxiosError<ErrorResponse>).response?.data?.message;
           setError(error || "")

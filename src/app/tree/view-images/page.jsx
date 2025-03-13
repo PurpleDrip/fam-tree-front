@@ -1,15 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation"; 
-import { useSelector } from "react-redux";
 import { ChevronLeft, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { changeMainImg, getImagesForID } from "@/api/node";
 import AddImages from "@/components/local/AddImages";
 
-const Page = () => {
+const PageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams(); 
 
@@ -19,6 +18,7 @@ const Page = () => {
   const [node, setNode] = useState(null);
   const [mainImg, setMainImg] = useState("");
 
+  // Fetch search parameters
   useEffect(() => {
     const nodeIdParam = searchParams.get("nodeId");
     const modeParam = searchParams.get("mode");
@@ -27,18 +27,23 @@ const Page = () => {
     if (modeParam) setMode(modeParam);
   }, [searchParams]);
 
+  // Fetch images for the given node ID
   useEffect(() => {
-      getImagesForID(nodeId)
-        .then((res) => {
-          setMainImg(res.data.mainImg)
-          setNode(res.data.data)})
-        .catch((err) => {
-          console.log(err);
-          setError(err.response?.data?.message || "Failed to fetch images.");
-        });
+    if (!nodeId) return;
+
+    getImagesForID(nodeId)
+      .then((res) => {
+        console.log(res);
+        setMainImg(res.data.mainImg);
+        setNode(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+        setError(err.response?.data?.message || "Failed to fetch images.");
+      });
   }, [nodeId]);
 
-  console.log(node)
+  console.log(node);
 
   const handleSubmit = async (imgUrl) => {
     console.log(imgUrl);
@@ -55,20 +60,20 @@ const Page = () => {
       {node ? (
         <>
           <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4 mt-12">
-            {node.map((img, index) => (
-              <div className="relative" key={img || index}>
+            {node.map((img) => (
+              <div className="relative" key={img.id}>
                 <img
-                  src={img}
+                  src={img.url}
                   alt=""
                   className="w-full rounded-lg shadow-lg border-2 border-[#00ff0050] p-2"
                 />
                 {mode === "edit" && (
-                  img === mainImg ? (
+                  img.url === mainImg ? (
                     <button className="absolute bottom-4 right-3 bg-[#00ff00] px-4 py-1 rounded-full text-sm text-black font-semibold cursor-not-allowed">
                       Current DP
                     </button>
                   ) : (
-                    <div className="flex absolute bottom-4 items-center justify-between w-full px-4" key={index * 10}>
+                    <div className="flex absolute bottom-4 items-center justify-between w-full px-4" key={img.id * 10}>
                       <button className="bg-red-400 p-2 rounded-full shadow-2xl cursor-pointer hover:bg-red-500">
                         <Trash size={16} />
                       </button>
@@ -98,10 +103,18 @@ const Page = () => {
           >
             <ChevronLeft size={40} />
           </div>
-          {mode==="edit" && <AddImages />}
+          {mode === "edit" && <AddImages />}
         </div>
       </div>
     </div>
+  );
+};
+
+const Page = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PageContent />
+    </Suspense>
   );
 };
 

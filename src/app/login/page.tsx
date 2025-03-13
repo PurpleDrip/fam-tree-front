@@ -66,12 +66,12 @@ export default function Home() {
           <form onSubmit={handleSubmit}>
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="username">Username</Label>
-                <Input id="username" name="username" placeholder="Username" required />
+                <Label htmlFor="username" >Username</Label>
+                <Input id="username" name="username" placeholder="Username" autoComplete="current-username" required />
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" name="password" type="password" placeholder="Password" required />
+                <Input id="password" name="password" type="password" placeholder="Password" autoComplete="current-password" required />
               </div>
             </div>
             <h1 className="text-center mt-2 text-lg">Or sign in with</h1>

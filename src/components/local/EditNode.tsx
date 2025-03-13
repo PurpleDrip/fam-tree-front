@@ -124,7 +124,10 @@ const EditNode = ({ node }: { node: INode["data"] }) => {
               {/* Birthdate Selection */}
               <div className="flex flex-col space-y-1.5 min-w-max">
                 <Label htmlFor="birthdate">Birthdate</Label>
-                <Calender selectedDate={dob} onChange={setBirthdate} />
+                <Calender 
+                  selectedDate={dob} 
+                  onChange={(date: string | undefined) => setBirthdate(date || '')} 
+                />
               </div>
 
               {/* Description Input */}
