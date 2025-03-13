@@ -91,7 +91,7 @@ const Page = () => {
     )}
   </div>
   <div className="border">
-    <Image src="/Images/hero_image1.jpeg" width="450" height="100" alt="Image of a family" />
+    <Image src="/images/hero_image1.jpeg" width="450" height="100" alt="Image of a family" />
   </div>
 </section>
 
