@@ -20,6 +20,8 @@ import { useDispatch } from 'react-redux'
 import { addTree } from '@/redux/userSlice'
 import { formatNodes } from '@/lib/formatNode'
 
+const URL=process.env.NEXT_PUBLIC_API_URL;
+
 
 const AddNode = () => {
     const dispatch =useDispatch();
@@ -65,7 +67,7 @@ const AddNode = () => {
         formData.images.forEach(file => data.append("images", file));
     
         try {
-            const response = await axios.post("https://api.famtree.in/api/node/addnode", data, {
+            const response = await axios.post(`${URL}/node/addnode`, data, {
                 headers: { "Content-Type": "multipart/form-data" },
                 withCredentials:true,
             });
@@ -101,6 +103,10 @@ const AddNode = () => {
                                 <Label htmlFor="relationship">Relationship</Label>
                                 <Input type="text" id="relationship" name="relationship" placeholder="Relationship" value={formData.relationship} onChange={handleChange} />
                             </div>
+                            <div className="flex flex-col space-y-1.5 min-w-max">
+                                <Label htmlFor="birthdate">Date of Birth</Label>
+                                <Calender selectedDate={birthdate} uponChange={(date)=>setBirthdate(date || "")} />
+                            </div>
                             <div className="flex flex-col space-y-1.5">
                                 <Label htmlFor="gender">Gender</Label>
                                 <Select onValueChange={setGender}>
@@ -116,10 +122,6 @@ const AddNode = () => {
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>
-                            </div>
-                            <div className="flex flex-col space-y-1.5 min-w-max">
-                                <Label htmlFor="birthdate">Birthdate</Label>
-                                <Calender selectedDate={birthdate} uponChange={(date)=>setBirthdate(date || "")} />
                             </div>
                             <div className="grid w-full gap-1.5">
                                 <Label htmlFor="description">Description</Label>
