@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Dialog,
     DialogContent,
@@ -14,19 +14,25 @@ import Calender from './Calender'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../ui/select'
 import { Textarea } from '../ui/textarea'
 import { Button } from '../ui/button'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 import { addTree } from '@/redux/userSlice'
 import { formatNodes } from '@/lib/formatNode'
+import { toast } from 'sonner'
 
 const URL=process.env.NEXT_PUBLIC_API_URL;
 
-
+interface ErrorResponse {
+    message: string;
+  }
 const AddNode = () => {
     const dispatch =useDispatch();
 
-    const treeId = useSelector((state: {treeId:string}) => state.treeId)
+    const [errMsg, setErrMsg] = useState("");
+    const [isSubmitting, setSubmitting] = useState(false);
+
+    const treeName = useSelector((state: {treeName:string}) => state.treeName)
     const [open, setOpen] = useState(false);
     const [gender, setGender] = useState("");
     const [birthdate, setBirthdate] = useState<string| null>(null);
@@ -38,6 +44,22 @@ const AddNode = () => {
         images: [] as File[],
     });
 
+    useEffect(()=>{
+        if(open){
+            setSubmitting(false);
+            setErrMsg("");
+            setFormData({
+                name:"",
+                relationship:"",
+                description:"",
+                images:[]
+            });
+            setGender("");
+            setBirthdate("");
+            setRole("");
+        }
+    },[open])
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -48,47 +70,60 @@ const AddNode = () => {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        setSubmitting(true);
         const data = new FormData();
     
-        // Append text fields
         data.append("name", formData.name);
         data.append("relation", formData.relationship);
         data.append("gender", gender);
         data.append("description", formData.description);
         data.append("dob", birthdate || "");
         data.append("role", role || "");
-        data.append("treeId", treeId);
+        data.append("treeName", treeName);
         const position = { x: 20, y: 20 };
         data.append("position", JSON.stringify(position));
     
-        // Append images properly
         formData.images.forEach(file => data.append("images", file));
+
+        const promise=new Promise(async (resolve,reject)=>{
+            try {
+                if(!birthdate){
+                    setErrMsg("Date Of Birth field is required");
+                    reject("Date Of Birth field is required");
+                    setSubmitting(false)
+                    return;
+                }
+
+                const response = await axios.post(`${URL}/node/addnode`, data, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                    withCredentials:true,
+                });
+                const tree=response.data.data;
+                const formatedNodes=formatNodes(tree.nodes);
     
-        try {
-            const response = await axios.post(`${URL}/node/addnode`, data, {
-                headers: { "Content-Type": "multipart/form-data" },
-                withCredentials:true,
-            });
-            const tree=response.data.data;
-            console.log("Response:", tree);
-            const formatedNodes=formatNodes(tree.nodes);
+                dispatch(addTree({nodes:formatedNodes,treeName:tree.treeName,edges:tree.edges}))
+                resolve(tree);
+                setOpen(false); 
+            } catch (error) {
+                console.error("Error submitting form:", error);
+                const err=(error as AxiosError<ErrorResponse>).response?.data?.message || "An error occurred";
+                reject(err)
+                setErrMsg(err);
+                setSubmitting(false)
+            }
+        })
 
-            console.log(formatedNodes)
-
-            dispatch(addTree({nodes:formatedNodes,treeName:tree.treeName,edges:tree.edges}))
-            alert("Node added successfully!");
-            setOpen(false); 
-        } catch (error) {
-            console.error("Error submitting form:", error);
-            alert("Error adding node.");
-            setOpen(false); 
-        }
+        toast.promise(promise, {
+            loading: "Loading...",
+            success: "Added Node Successfully!",
+            error: (err) => err || "Adding Node failed",
+          });
     };
 
     return (
-        <div className=' bg-[#00ff00] cursor-pointer text-black px-2 py-1 font-semibold text-sm rounded-full hover:bg-[#00ff008e]'>
+        <div className=' bg-[#00ff00] cursor-pointer text-black px-4 py-2 font-semibold text-sm rounded-full hover:bg-[#00ff008e]'>
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger className='cursor-pointer'>Add Node</DialogTrigger>
                 <DialogContent>
@@ -97,11 +132,11 @@ const AddNode = () => {
                         <form className='flex flex-col gap-4' onSubmit={handleSubmit} encType="multipart/form-data">
                             <div className="grid w-full items-center gap-1.5">
                                 <Label htmlFor="name">Name</Label>
-                                <Input type="text" id="name" name="name" placeholder="Name" value={formData.name} onChange={handleChange} />
+                                <Input type="text" id="name" name="name" placeholder="Name" value={formData.name} onChange={handleChange} required />
                             </div>
                             <div className="grid w-full items-center gap-1.5">
                                 <Label htmlFor="relationship">Relationship</Label>
-                                <Input type="text" id="relationship" name="relationship" placeholder="Relationship" value={formData.relationship} onChange={handleChange} />
+                                <Input type="text" id="relationship" required name="relationship" placeholder="Relationship" value={formData.relationship} onChange={handleChange} />
                             </div>
                             <div className="flex flex-col space-y-1.5 min-w-max">
                                 <Label htmlFor="birthdate">Date of Birth</Label>
@@ -109,7 +144,7 @@ const AddNode = () => {
                             </div>
                             <div className="flex flex-col space-y-1.5">
                                 <Label htmlFor="gender">Gender</Label>
-                                <Select onValueChange={setGender}>
+                                <Select onValueChange={setGender} required>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select a gender" />
                                     </SelectTrigger>
@@ -125,11 +160,11 @@ const AddNode = () => {
                             </div>
                             <div className="grid w-full gap-1.5">
                                 <Label htmlFor="description">Description</Label>
-                                <Textarea id="description" name="description" placeholder="Description about the person." value={formData.description} onChange={handleChange} />
+                                <Textarea id="description" name="description" required placeholder="Description about the person." value={formData.description} onChange={handleChange} />
                             </div>
                             <div className="flex flex-col space-y-1.5">
                                 <Label htmlFor="role">Role</Label>
-                                <Select onValueChange={setRole}>
+                                <Select onValueChange={setRole} required>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select a role" />
                                     </SelectTrigger>
@@ -144,10 +179,11 @@ const AddNode = () => {
                             </div>
                             <div className="grid w-full items-center gap-1.5">
                                 <Label htmlFor="images">Pictures</Label>
-                                <Input id="images" type="file" name="images" multiple onChange={handleFileChange} />
+                                <Input id="images" type="file" name="images" required multiple onChange={handleFileChange} />
                             </div>
-                            <Button className='bg-[#00ff0028] text-[#00ff00] hover:bg-[#00ff0041] cursor-pointer' type="submit">
-                                Create Node
+                            <p className='text-center text-red-400'>{errMsg}</p>
+                            <Button className='bg-[#00ff0028] text-[#00ff00] hover:bg-[#00ff0041] cursor-pointer' type="submit" disabled={isSubmitting}>
+                                {isSubmitting ? "Creating Node..." : "Create Node"}
                             </Button>
                         </form>
                     </DialogHeader>
