@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -16,6 +16,7 @@ import { useDispatch } from 'react-redux'
 import { addTree, createdTree } from '@/redux/userSlice'
 import { ITree } from '@/types/tree'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 interface CreateTreeProps {
   open: boolean;
@@ -31,23 +32,48 @@ const CreateTree =({ open, onOpenChange }: CreateTreeProps) => {
     const dispatch=useDispatch();
     const [treeName, setTreeName] = useState("");
     const [error, setError] = useState<string>("");
+    const [isSubmitting,setSubmitting]=React.useState(false);
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    useEffect(() => {
+      if (open) {
+        setTreeName("");
+        setError("");
+        setSubmitting(false);
+      }
+    }, [open]); 
+    
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        try{
-          console.log(treeName)
-          const res=await createTree(treeName as string);
-          const tree=res.data?.tree as ITree | null;
-          dispatch(addTree(tree))
-          dispatch(createdTree(treeName))
-          onOpenChange(false);
-          router.push("/tree");
-        }catch(e){
-          const error=(e as AxiosError<ErrorResponse>).response?.data?.message;
-          setError(error || "")
-          console.log(error);
-        }
+        setSubmitting(true)
+
+        const promise=new Promise(async (resolve,reject)=>{
+          try{
+            console.log(treeName)
+            const res=await createTree(treeName as string);
+            const tree=res.data?.tree as ITree | null;
+            dispatch(addTree(tree))
+            dispatch(createdTree(treeName))
+            onOpenChange(false);
+
+            resolve(tree);
+
+            router.push("/tree");
+          }catch(e){
+            const error=(e as AxiosError<ErrorResponse>).response?.data?.message;
+            console.log(error);
+            reject(error)
+            setError(error || "")
+          }finally{
+            setSubmitting(false);
+          }
+        })
+
+        toast.promise(promise, {
+          loading: "Loading...",
+          success: "Tree Created Successful!",
+          error: (err) => err || "Tree Creation failed",
+        });
     }
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -67,8 +93,15 @@ const CreateTree =({ open, onOpenChange }: CreateTreeProps) => {
             <Input value={treeName} onChange={(e)=>setTreeName(e.target.value)}/>
             {error && <p className='text-center text-red-400'>{error}</p>}
             <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-                <Button className="bg-[#00FF00] text-black hover:bg-[#00CC00]" type="submit">Create Tree</Button>
+                <Button variant="outline" onClick={() => {
+                  setTreeName(""); 
+                  setError(""); 
+                  setSubmitting(false);
+                  onOpenChange(false)
+                }}>Cancel</Button>
+                <Button className="bg-[#00FF00] text-black hover:bg-[#00CC00]" type="submit">
+                  {isSubmitting ? "Creating Tree..." : "Create Tree"}
+                </Button>
             </div>
           </form>
         </div>

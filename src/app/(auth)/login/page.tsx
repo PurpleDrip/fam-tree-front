@@ -20,12 +20,14 @@ import { addTree, registered } from "@/redux/userSlice";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
+import { toast } from "sonner";
 
 export default function Home() {
   const router = useRouter();
 
   const [openDialog, setOpenDialog] = React.useState(false);
   const [errorMsg, setErrorMsg] = React.useState("");
+  const [isSubmitting,setSubmitting]=React.useState(false)
 
   const dispatch=useDispatch();
   
@@ -38,22 +40,38 @@ export default function Home() {
     message: string;
   }
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setSubmitting(true);
+
     const formData = new FormData(event.target as HTMLFormElement);
     const data = Object.fromEntries(formData) as unknown as Data;
-    try {
-      const res = await loginUser(data);
-      console.log(res)
-      const tree=res?.data?.data;
-      dispatch(addTree(tree));
-      dispatch(registered(true));
-      router.push("/")
-    } catch (e) {
-      console.log(e)
-      const err = (e as AxiosError<ErrorResponse>).response?.data?.message || "An error occurred";
-      setErrorMsg(err);
-    }
+
+    const promise = new Promise(async (resolve, reject) => {
+        try {
+            const res = await loginUser(data);
+            console.log(res);
+            const tree = res?.data?.data;
+            dispatch(addTree(tree));
+            dispatch(registered(true));
+            resolve(tree);
+            router.push("/");
+        } catch (e) {
+            console.log(e);
+            const err = (e as AxiosError<ErrorResponse>).response?.data?.message || "An error occurred";
+            setErrorMsg(err);
+            reject(err);
+        } finally {
+            setSubmitting(false);
+        }
+    });
+
+    toast.promise(promise, {
+        loading: "Loading...",
+        success: "Login Successful!",
+        error: (err) => err || "Login failed",
+      });
+      
   };
 
   return (
@@ -95,8 +113,8 @@ export default function Home() {
               <h1 className="text-center mt-2 text-red-400">{errorMsg}</h1>
             </div>
             <CardFooter className="flex flex-col items-center gap-2 mt-4">
-              <Button className="px-12 rounded-xl bg-[#00FF00] " type="submit">
-                Submit
+              <Button className="px-12 rounded-xl bg-[#00FF00] " type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Logging in..." : "Submit"}
               </Button>
             </CardFooter>
           </form>

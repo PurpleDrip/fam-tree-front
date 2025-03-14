@@ -7,10 +7,13 @@ import { useRouter } from "next/navigation";
 
 import { changeMainImg, getImagesForID } from "@/api/node";
 import AddImages from "@/components/local/AddImages";
+import { Button } from "@/components/ui/button";
 
 const PageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams(); 
+
+  const [isOpen, setIsOpen] = useState(false)
 
   const [nodeId, setNodeId] = useState("");
   const [mode, setMode] = useState("");
@@ -33,7 +36,6 @@ const PageContent = () => {
 
     getImagesForID(nodeId)
       .then((res) => {
-        console.log(res);
         setMainImg(res.data.mainImg);
         setNode(res.data.data);
       })
@@ -42,8 +44,6 @@ const PageContent = () => {
         setError(err.response?.data?.message || "Failed to fetch images.");
       });
   }, [nodeId]);
-
-  console.log(node);
 
   const handleSubmit = async (imgUrl) => {
     console.log(imgUrl);
@@ -61,7 +61,7 @@ const PageContent = () => {
         <>
           <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4 mt-12">
             {node.map((img) => (
-              <div className="relative" key={img.id}>
+              <div className="relative" key={img._id}>
                 <img
                   src={img.url}
                   alt=""
@@ -73,7 +73,7 @@ const PageContent = () => {
                       Current DP
                     </button>
                   ) : (
-                    <div className="flex absolute bottom-4 items-center justify-between w-full px-4" key={img.id * 10}>
+                    <div className="flex absolute bottom-4 items-center justify-between w-full px-4" key={img._id * 10}>
                       <button className="bg-red-400 p-2 rounded-full shadow-2xl cursor-pointer hover:bg-red-500">
                         <Trash size={16} />
                       </button>
@@ -103,7 +103,10 @@ const PageContent = () => {
           >
             <ChevronLeft size={40} />
           </div>
-          {mode === "edit" && <AddImages />}
+          {mode === "edit" && <AddImages nodeId={nodeId} open={isOpen} setIsOpen={setIsOpen} />}
+          {mode==="edit" && <Button 
+            className="bg-[#00ff00] cursor-pointer hover:bg-[#00ff00]"
+            onClick={() => setIsOpen(true)}>Add Images</Button>}
         </div>
       </div>
     </div>
