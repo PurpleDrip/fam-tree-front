@@ -14,7 +14,6 @@ import axios, { AxiosError } from 'axios'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { useSelector } from 'react-redux'
-import { UserState } from '@/redux/userSlice'
 
 interface ErrorResponse {
   message: string;
