@@ -184,6 +184,6 @@ This project is licensed under the **MIT License**.
 ---
 
 ## 👥 Contributors
-- [Your Name](https://github.com/your-profile)
+- [PurpleDrip](https://github.com/PurpleDrip)
 - Open for contributions! 💡
 
