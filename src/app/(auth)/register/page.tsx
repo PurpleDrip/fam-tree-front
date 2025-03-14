@@ -30,6 +30,7 @@ import { AxiosError } from "axios";
 import { useDispatch} from "react-redux";
 import { addTree, registered } from "@/redux/userSlice";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface ErrorResponse {
   message: string;
@@ -41,12 +42,14 @@ export default function Register() {
 
   const [openDialog, setOpenDialog] = React.useState(false);
   const [errorMsg, setErrorMsg] = React.useState<string>("");
+  const [isSubmitting,setSubmitting]=React.useState(false)
 
   const [gender, setGender] = React.useState("");
   const [birthdate, setBirthdate] = React.useState<string | null>(null);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setSubmitting(true);
     const formData = new FormData(event.currentTarget);
     const data = Object.fromEntries(formData) as Record<string, string>;
     if (gender) data.gender = gender;
@@ -60,18 +63,34 @@ export default function Register() {
       dob:data.birthdate,
       mode:"default"
     }
-    try{
-      const response=await registerUser(sendData);
-      const tree=response.data.data;
-      console.log(tree);
-      dispatch(addTree(tree));
-      dispatch(registered(true));
-      router.push("/")
-    }catch(e){
-      const error=(e as AxiosError<ErrorResponse>).response?.data?.message;
-      console.log(error);
-      setErrorMsg(error || "An error occurred");
-    }
+    const promise=new Promise(async (resolve,reject)=>{
+      try{
+        const response=await registerUser(sendData);
+        const tree=response.data.data;
+        console.log(tree);
+        dispatch(addTree(tree));
+        dispatch(registered(true));
+
+        resolve(tree);
+
+        router.push("/")
+      }catch(e){
+        const error=(e as AxiosError<ErrorResponse>).response?.data?.message;
+        console.log(error);
+
+        reject(error);
+
+        setErrorMsg(error || "An error occurred");
+      }finally{
+        setSubmitting(false)
+      }
+    })
+
+    toast.promise(promise, {
+      loading: "Loading...",
+      success: "Registration Successful!",
+      error: (err) => err || "Login failed",
+    });
   };
 
   return (
@@ -88,7 +107,7 @@ export default function Register() {
                 <Input id="username" name="username" placeholder="Username" required />
               </div>
               <div className="flex flex-col space-y-1.5 min-w-max">
-                <Label htmlFor="birthdate">Birthdate</Label>
+                <Label htmlFor="birthdate">Date Of Birth</Label>
                 <Calendar 
                   selectedDate={birthdate} 
                   uponChange={(date) => setBirthdate(date || '')} 
@@ -137,7 +156,9 @@ export default function Register() {
             </Link>
             <h1 className="text-center mb-2 text-red-400">{errorMsg}</h1>
             <CardFooter className="flex justify-center">
-              <Button type="submit" className="px-12 rounded-xl bg-[#00FF00]">Submit</Button>
+              <Button type="submit" className="px-12 rounded-xl bg-[#00FF00]" disabled={isSubmitting}>
+                {isSubmitting ? "Logging in..." : "Submit"}
+              </Button>
             </CardFooter>
           </form>
         </CardContent>
