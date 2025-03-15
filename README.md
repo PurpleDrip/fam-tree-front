@@ -98,7 +98,7 @@ npm start
 vercel deploy
 ```
 
-## API Endpoints
+## 📝 API Endpoints
 
 ### **🔑 Authentication** (`/api/auth/`)
 - 🔹 `POST /register` - Register a new user

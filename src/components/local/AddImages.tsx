@@ -12,15 +12,23 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import axios, { AxiosError } from 'axios'
 import { toast } from 'sonner'
-import { useRouter } from 'next/navigation'
 import { useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
+import { addTree } from '@/redux/userSlice'
+import { formatNodes } from '@/lib/formatNode'
 
 interface ErrorResponse {
   message: string;
 }
 
-const AddImages = ({ nodeId, open, setIsOpen }: { nodeId: string; open: boolean; setIsOpen: (val: boolean) => void }) => {
-  const router = useRouter();
+interface AddImagesProps {
+  nodeId: string;
+  open: boolean;
+  setIsOpen: (val: boolean) => void;
+}
+
+const AddImages = ({ nodeId, open, setIsOpen }: AddImagesProps) => {
+  const dispatch=useDispatch();
 
   const treeName = useSelector((state: {treeName:string}) => state.treeName)
   const [images, setImages] = useState<FileList | null>(null)
@@ -51,10 +59,11 @@ const AddImages = ({ nodeId, open, setIsOpen }: { nodeId: string; open: boolean;
           },
           withCredentials: true,
         });
-  
-        resolve(response.data.tree);
+        const tree=response.data.data;
+        resolve(tree);
+        const formatedNode=formatNodes(tree.nodes);
+        dispatch(addTree({nodes:formatedNode,edges:tree.edges,treeName:tree.treeName}))
         setIsOpen(false);
-        router.refresh();
       } catch (error) {
         console.error('Error uploading images:', error);
         const err = (error as AxiosError<ErrorResponse>).response?.data.message;

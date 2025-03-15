@@ -12,26 +12,44 @@ import { Button } from "../ui/button";
 import { deleteNode } from "@/api/node";
 import { deleteNode as delNode } from "@/redux/userSlice";
 import { useDispatch } from "react-redux";
-import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
+
+interface ErrorResponse {
+  message: string;
+}
 
 const DeleteNode = ({ id }: { id: string }) => {
   const dispatch = useDispatch();
-  const router = useRouter();
-  const [open, setOpen] = useState(false); // Controls Dialog state
+  const [open, setOpen] = useState(false); 
+  const [isSubmitting, setSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setSubmitting(true)
     console.log(id);
-    try {
-      const res = await deleteNode(id);
-      console.log(res);
-      dispatch(delNode(id));
-      router.refresh();
-      setOpen(false); 
 
-    } catch (err) {
-      console.log(err);
-    }
+    const promise=new Promise(async(resolve,reject)=>{
+      try {
+        const res = await deleteNode(id);
+        console.log(res);
+        dispatch(delNode(id));
+        setOpen(false); 
+        resolve(res);
+
+      } catch (err) {
+        console.log(err);
+        const error=(err as AxiosError<ErrorResponse>).response?.data?.message;
+        reject(error)
+      }
+    })
+
+    toast.promise(promise, {
+      loading: "Deleting...",
+      success: "Deleted Node Successfully!",
+      error: (err) => err || "Deleting Node failed",
+    });
+
   };
 
   const handleCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -58,14 +76,16 @@ const DeleteNode = ({ id }: { id: string }) => {
               type="button"
               className="text-[#ff0000] bg-[#ff000018] hover:bg-[#ff000052] cursor-pointer"
               onClick={handleCancel}
+              disabled={isSubmitting}
             >
               Cancel
             </Button>
             <Button
               type="submit"
               className="text-[#00ff00] bg-[#00ff0018] hover:bg-[#00ff0052] cursor-pointer"
+              disabled={isSubmitting}
             >
-              Confirm
+              {isSubmitting? "Deleting...":"Confirm"}
             </Button>
           </div>
         </form>

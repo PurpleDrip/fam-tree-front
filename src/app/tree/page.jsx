@@ -16,9 +16,12 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import { updateNodes, updateEdges } from "@/redux/userSlice";
 import {updateTree} from "@/api/tree"
 import Tools from "@/components/local/Tools"
+import { toast } from "sonner";
 
 function Flow() {
   const dispatch = useDispatch();
+
+  const [isSubmitting, setSubmitting] = useState(false);
   
   // ✅ Fetch nodes and edges from Redux store
   const reduxNodes = useSelector((state) => state.nodes) || [];
@@ -104,23 +107,36 @@ function Flow() {
   },[]);
 
   // ✅ Save changes to Redux and DB
-  const handleSave = async () => {
-    dispatch(updateNodes(nodes)); // ✅ Update Redux
-    dispatch(updateEdges(edges)); // ✅ Update Redux
-    try {
-      const res=await updateTree(nodes,edges);
-      console.log(res)
-      setChanges(false); // Reset change tracker
-      
-      // Update original references after save
-      originalNodesRef.current = JSON.stringify(nodes);
-      originalEdgesRef.current = JSON.stringify(edges);
-      
-      alert("Changes saved successfully!");
-    } catch (error) {
-      console.error("Failed to save changes:", error);
-      alert("Error saving changes.");
-    }
+  const handleSave =  () => {
+    setSubmitting(true);
+    const promise=new Promise(async (resolve,reject)=>{
+      dispatch(updateNodes(nodes)); // ✅ Update Redux
+      dispatch(updateEdges(edges)); // ✅ Update Redux
+      try {
+        const res=await updateTree(nodes,edges);
+        console.log(res)
+        setChanges(false); // Reset change tracker
+        
+        // Update original references after save
+        originalNodesRef.current = JSON.stringify(nodes);
+        originalEdgesRef.current = JSON.stringify(edges);
+        
+        resolve(res);
+      } catch (error) {
+        console.error("Failed to save changes:", error);
+        alert("Error saving changes.");
+        reject(error.response.data.message)
+      }finally{
+        setSubmitting(false);
+      }
+    })
+
+    toast.promise(promise, {
+      loading: "Saving...",
+      success: "Saved Progress Successfully!",
+      error: (err) => err || "Saving failed",
+    });
+
   };
 
   return (
@@ -142,13 +158,13 @@ function Flow() {
       <Tools/>
 
       {changes && (
-        <div className="bg-[#00ff00] absolute min-w-max top-28 left-1/2 px-8 rounded-xl -translate-x-1/2 -translate-y-1/2">
-          <h1 className="font-semibold text-xl">Save the changes?</h1>
+        <div className="bg-[#00ff00] absolute min-w-max top-16 left-1/2 px-3 py-2 rounded-xl -translate-x-1/2 -translate-y-1/2 z-50 flex items-center justify-center gap-3">
+          <h1 className="font-semibold text-md">Save the changes?</h1>
           <button 
             onClick={handleSave} 
-            className="bg-black text-white px-6 py-2 rounded-full mb-1 mx-auto flex"
+            className="bg-black text-white px-2 py-1 rounded-sm text-sm cursor-pointer" disabled={isSubmitting}
           >
-            Save
+            {isSubmitting? "Saving...":"Save"}
           </button>
         </div>
       )}

@@ -24,7 +24,7 @@ export const updatePosition=async(pos:Node["position"])=>{
 }
 
 export const changeMainImg=async(url:string,nodeId:string)=>{
-    return axiosInstance.post("/changedp",{url,nodeId})
+    return axiosInstance.post("/node/changedp",{url,nodeId})
 }
 
 export const getImagesForID=async(nodeId:string)=>{
@@ -33,4 +33,8 @@ export const getImagesForID=async(nodeId:string)=>{
 
 export const deleteNode=async(id:string)=>{
     return axiosInstance.post("/node/deletenode",{id})
+}
+
+export const deleteImage=async(imgId:string,nodeId:string)=>{
+    return axiosInstance.post("/node/deleteimgbyid",{imgId,nodeId})
 }
