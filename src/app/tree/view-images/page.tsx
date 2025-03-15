@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { ChevronLeft, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { changeMainImg, deleteImage } from "@/api/node";
+import { changeMainImg, deleteImage, getImagesForID } from "@/api/node";
 import AddImages from "@/components/local/AddImages";
 import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
@@ -15,7 +15,7 @@ import { addTree } from "@/redux/userSlice";
 import { AxiosError } from "axios";
 import ErrorResponse from "@/types/errorMsg";
 import { toast } from "sonner";
-import { formatNodes } from "@/lib/formatNode";
+import { formatNode, formatNodes } from "@/lib/formatNode";
 import { Skeleton } from "@/components/ui/skeleton"
 
 
@@ -52,6 +52,19 @@ const PageContent = () => {
     if (filteredNode) {
       setNode(filteredNode);
       setMainImg(filteredNode.data?.mainImg || "");
+    }else{
+      getImagesForID(nodeId)
+      .then((res) => {
+        console.log("res",res)
+        const node=res.data.data;
+        const formatedNodes=formatNode(node);
+        console.log("fnode",formatedNodes)
+        setMainImg(formatedNodes.data?.mainImg);
+        setNode(formatedNodes);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     }
   }, [nodeId, storeNodes]); 
 
