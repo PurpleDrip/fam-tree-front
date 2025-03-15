@@ -28,7 +28,6 @@ const PageContent = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [nodeId, setNodeId] = useState("");
   const [mode, setMode] = useState("");
-  const [error, setError] = useState("");
   const [node, setNode] = useState<INode | null>(null);
   const [mainImg, setMainImg] = useState("");
   const [isSubmitting, setSubmitting] = useState(false);
@@ -74,7 +73,6 @@ const PageContent = () => {
       } catch (err) {
         const error = (err as AxiosError<ErrorResponse>).response?.data?.message;
         console.log(err);
-        setError(err as string);
         reject(error);
       }finally{
         setSubmitting(false)
@@ -112,7 +110,6 @@ const PageContent = () => {
       } catch (err) {
         const error = (err as AxiosError<ErrorResponse>).response?.data?.message;
         console.log(err);
-        setError(err as string);
         reject(error);
       }finally{
         setSubmitting(false)
