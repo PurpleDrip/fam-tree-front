@@ -56,8 +56,8 @@ const PageContent = () => {
       getImagesForID(nodeId)
       .then((res) => {
         console.log("res",res)
-        const node=res.data.data;
-        const formatedNodes=formatNode(node);
+        const ONode=res.data.data;
+        const formatedNodes=formatNode(ONode);
         console.log("fnode",formatedNodes)
         setMainImg(formatedNodes.data?.mainImg);
         setNode(formatedNodes);
