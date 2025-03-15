@@ -16,6 +16,8 @@ import { AxiosError } from "axios";
 import ErrorResponse from "@/types/errorMsg";
 import { toast } from "sonner";
 import { formatNodes } from "@/lib/formatNode";
+import { Skeleton } from "@/components/ui/skeleton"
+
 
 
 const PageContent = () => {
@@ -165,7 +167,11 @@ const PageContent = () => {
           </div>
         </>
       ) : (
-        <p className="mt-[50vh] flex text-center text-white">{error || "No images found for this ID."}</p>
+        <div className="grid grid-cols-4 gap-8 mt-16 px-4">
+          {[...Array(8)].map((_, index) => (
+            <Skeleton key={index} className="h-[25rem] w-[20vw]  rounded-xl" />
+          ))}
+        </div>
       )}
 
       {/* Top Navigation */}
