@@ -35,3 +35,22 @@ export const formatNodes = (nodes: defaultNode[]): INode[] => {
         position: node.position || { x: 0, y: 0 } 
     }));
 };
+
+export const formatNode=(node:defaultNode):INode =>{
+    return {
+        id: node._id,
+        type: "custom",
+        data: {
+            id: node._id,
+            name: node.name || "",
+            relation: node.relation || "",
+            gender: node.gender || "",
+            description: node.description || "",
+            dob: node.dob || "",
+            role: node.role || "",
+            images: node.images || [],
+            mainImg: node.mainImg || "",
+        },
+        position: node.position || { x: 0, y: 0 } 
+    }
+}
