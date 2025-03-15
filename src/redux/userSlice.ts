@@ -60,6 +60,12 @@ export const userSlice = createSlice({
         deleteEdge: (state, action: PayloadAction<string>) => {
             state.edges = state.edges.filter((edge) => edge.id !== action.payload);
         },
+        changeMainImg: (state, action: PayloadAction<{ imgUrl: string; nodeId: string }>) => {
+            const node = state.nodes.find((node) => node.id === action.payload.nodeId);
+            if (node) {
+                node.data.mainImg = action.payload.imgUrl;
+            }
+        },
     },
 });
 
@@ -74,6 +80,7 @@ export const {
     addEdge,
     deleteNode,
     deleteEdge,
+    changeMainImg
 } = userSlice.actions;
 
 export default userSlice.reducer;

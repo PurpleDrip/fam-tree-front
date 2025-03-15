@@ -1,4 +1,4 @@
-import INode from "@/types/node";
+import INode, { IImages } from "@/types/node";
 
 interface defaultNode{
     _id:string,
@@ -7,7 +7,7 @@ interface defaultNode{
     gender:string,
     description:string,
     dob:string,
-    images:Array<string>,
+    images:Array<IImages>,
     mainImg:string,
     role:string,
     treeId:string,

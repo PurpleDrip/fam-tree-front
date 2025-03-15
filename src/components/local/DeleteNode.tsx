@@ -12,7 +12,6 @@ import { Button } from "../ui/button";
 import { deleteNode } from "@/api/node";
 import { deleteNode as delNode } from "@/redux/userSlice";
 import { useDispatch } from "react-redux";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 
@@ -22,7 +21,6 @@ interface ErrorResponse {
 
 const DeleteNode = ({ id }: { id: string }) => {
   const dispatch = useDispatch();
-  const router = useRouter();
   const [open, setOpen] = useState(false); 
   const [isSubmitting, setSubmitting] = useState(false);
 
@@ -36,7 +34,6 @@ const DeleteNode = ({ id }: { id: string }) => {
         const res = await deleteNode(id);
         console.log(res);
         dispatch(delNode(id));
-        router.refresh();
         setOpen(false); 
         resolve(res);
 

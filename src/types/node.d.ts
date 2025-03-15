@@ -1,3 +1,8 @@
+export interface IImages{
+    _id:string,
+    url:string
+}
+
 interface INode{
     id:string,
     type:"custom",
@@ -9,7 +14,7 @@ interface INode{
         description:string,
         dob:string,
         role:string,
-        images:Array<string>,
+        images:Array<IImages>,
         mainImg:string,
     },
     position:{
