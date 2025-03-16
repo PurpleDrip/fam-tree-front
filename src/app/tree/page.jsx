@@ -142,7 +142,10 @@ function Flow() {
   return (
     <div className="h-screen text-black bg-black relative">
       <ReactFlow
-        nodes={nodes}
+        nodes={nodes.map(node => ({
+          ...node,
+          id: String(node.id)
+        }))}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
