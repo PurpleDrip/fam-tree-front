@@ -64,7 +64,7 @@ export default function Home() {
 
     toast.promise(promise, {
         loading: "Loading...",
-        success: (type)=> `Loged In as ${type}!` || "Logged In Successfully!",
+        success: (type)=> `Logged in as ${type}!` || "Logged In Successfully!",
         error: (err) => err || "Login failed",
       });
       

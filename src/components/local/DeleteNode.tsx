@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
 import { deleteNode } from "@/api/node";
-import { deleteNode as delNode } from "@/redux/userSlice";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
@@ -33,7 +32,6 @@ const DeleteNode = ({ id }: { id: string }) => {
       try {
         const res = await deleteNode(id);
         console.log(res);
-        dispatch(delNode(id));
         setOpen(false); 
         resolve(res);
 

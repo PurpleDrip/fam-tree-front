@@ -14,6 +14,7 @@ const Configure = () => {
     const checkCookies = async () => {
       try {
         const res = await checkForCookies();
+        console.log(res)
         dispatch(setInitialState(res.data.data))
         dispatch(registered(true));
       } catch (e) {

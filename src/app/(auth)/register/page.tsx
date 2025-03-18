@@ -100,7 +100,7 @@ export default function Register() {
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="owner">Owner</Label>
-                <Input id="owner" name="owner" placeholder="Give a name who owns this tree" required />
+                <Input id="owner" name="owner" placeholder="Owner of this tree" required />
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="password">Set Password</Label>

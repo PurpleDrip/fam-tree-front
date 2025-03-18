@@ -13,7 +13,6 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useCallback, useEffect, useState, useRef } from "react";
-import { updateNodes, updateEdges } from "@/redux/userSlice";
 import {updateTree} from "@/api/tree"
 import Tools from "@/components/local/Tools"
 import { toast } from "sonner";

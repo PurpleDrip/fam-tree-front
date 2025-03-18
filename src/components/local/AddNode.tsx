@@ -17,7 +17,6 @@ import { Button } from '../ui/button'
 import axios, { AxiosError } from 'axios'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
-import { addTree } from '@/redux/userSlice'
 import { formatNodes } from '@/lib/formatNode'
 import { toast } from 'sonner'
 
@@ -103,7 +102,6 @@ const AddNode = () => {
                 const tree=response.data.data;
                 const formatedNodes=formatNodes(tree.nodes);
     
-                dispatch(addTree({nodes:formatedNodes,treeName:tree.treeName,edges:tree.edges}))
                 resolve(tree);
                 setOpen(false); 
             } catch (error) {
