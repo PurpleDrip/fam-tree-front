@@ -1,6 +1,6 @@
 import axiosInstance from "@/services/axios"
 
-export const loginUser=async(data:{username:string,password:string})=>{
+export const loginUser=async(data:{treeName:string,password:string})=>{
     return axiosInstance.post("/auth/login",data)
 }
 

@@ -16,11 +16,12 @@ import { FcGoogle } from "react-icons/fc";
 import { RiFacebookCircleFill } from "react-icons/ri";
 import Drawer from "@/components/local/DrawerBox";
 import { loginUser } from "@/api/auth";
-import { addTree, registered } from "@/redux/userSlice";
+import {registered, setInitialState } from "@/redux/userSlice";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
+import ErrorResponse from "@/types/errorMsg";
 
 export default function Home() {
   const router = useRouter();
@@ -32,12 +33,8 @@ export default function Home() {
   const dispatch=useDispatch();
   
   interface Data {
-    username: string;
+    treeName: string;
     password: string;
-  }
-
-  interface ErrorResponse {
-    message: string;
   }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -51,10 +48,9 @@ export default function Home() {
         try {
             const res = await loginUser(data);
             console.log(res);
-            const tree = res?.data?.data;
-            dispatch(addTree(tree));
+            dispatch(setInitialState(res.data.data))
             dispatch(registered(true));
-            resolve(tree);
+            resolve(res.data.data.type);
             router.push("/");
         } catch (e) {
             console.log(e);
@@ -68,7 +64,7 @@ export default function Home() {
 
     toast.promise(promise, {
         loading: "Loading...",
-        success: "Login Successful!",
+        success: (type)=> `Loged In as ${type}!` || "Logged In Successfully!",
         error: (err) => err || "Login failed",
       });
       
@@ -84,12 +80,12 @@ export default function Home() {
           <form onSubmit={handleSubmit}>
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="username" >Username</Label>
-                <Input id="username" name="username" placeholder="Username" autoComplete="current-username" required />
+                <Label htmlFor="username" >Fam Tree Name</Label>
+                <Input id="username" name="treeName" placeholder="Fam Tree Name" autoComplete="current-username" required />
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" name="password" type="password" placeholder="Password" autoComplete="current-password" required />
+                <Input id="password" name="password" type="password" placeholder="Password" autoComplete="current-password"  />
               </div>
             </div>
             <h1 className="text-center mt-2 text-lg">Or sign in with</h1>
