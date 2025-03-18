@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Handle, Position } from "@xyflow/react";
 import { Mars, Transgender, Venus } from "lucide-react";
 
 import EditNode from "./EditNode";
 import DeleteNode from "./DeleteNode"
-import ChangeRole from "./ChangeRole"
 
 const NodeComponent = ({ 
   id, 
@@ -56,18 +55,16 @@ const NodeComponent = ({
       
       <div className="flex items-center justify-center gap-2 mt-2">
         {mode==="view" && <a href={`/tree/view-images/?nodeId=${id}`} className="text-xs px-4 py-2 bg-[#00ff0018] text-[#00ff00] rounded-full cursor-pointer hover:bg-[#00ff0052]">View Photos</a>}
-        {mode!=="view" && <ChangeRole/>}
         {mode!=="view" && <a href={`/tree/view-images/?nodeId=${id}&mode=edit`} className="text-xs px-4 py-2 bg-[#00ff0018] text-[#00ff00] rounded-full cursor-pointer hover:bg-[#00ff0052]">Edit Photos</a>}
       </div>
 
       { mode!=="view" &&
       <div className="flex items-center justify-center gap-2 mt-2">
-        <EditNode node={data}/>
-        <DeleteNode id={data.id}/>
+        <EditNode node={data} nodeId={id}/>
+        <DeleteNode id={id}/>
       </div>
       }
 
-      {mode!=="view" && <p className="text-center px-2 py-1 bg-[#00ff00] text-black font-semibold rounded-full text-xs max-w-min absolute top-2 right-2">{data.role}</p>}
       {/* Handles */}
       <Handle 
         type="source" 

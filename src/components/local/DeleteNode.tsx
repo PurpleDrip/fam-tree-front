@@ -10,17 +10,15 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
 import { deleteNode } from "@/api/node";
-import { deleteNode as delNode } from "@/redux/userSlice";
-import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
-
-interface ErrorResponse {
-  message: string;
-}
+import ErrorResponse from "@/types/errorMsg";
+import { madeChanges } from "@/redux/userSlice";
+import { useDispatch } from "react-redux";
 
 const DeleteNode = ({ id }: { id: string }) => {
-  const dispatch = useDispatch();
+  const dispatch=useDispatch();
+  
   const [open, setOpen] = useState(false); 
   const [isSubmitting, setSubmitting] = useState(false);
 
@@ -33,14 +31,15 @@ const DeleteNode = ({ id }: { id: string }) => {
       try {
         const res = await deleteNode(id);
         console.log(res);
-        dispatch(delNode(id));
         setOpen(false); 
-        resolve(res);
-
+        resolve(res); 
+        dispatch(madeChanges())
       } catch (err) {
         console.log(err);
         const error=(err as AxiosError<ErrorResponse>).response?.data?.message;
         reject(error)
+      }finally{
+        setSubmitting(false);
       }
     })
 

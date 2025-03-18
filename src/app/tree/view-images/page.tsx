@@ -4,26 +4,24 @@ import React, { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation"; 
 import { ChevronLeft, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { AxiosError } from "axios";
+import { toast } from "sonner";
 
 import { changeMainImg, deleteImage, getImagesForID } from "@/api/node";
 import AddImages from "@/components/local/AddImages";
 import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 import INode from "@/types/node";
-import { useDispatch } from "react-redux";
-import { addTree } from "@/redux/userSlice";
-import { AxiosError } from "axios";
 import ErrorResponse from "@/types/errorMsg";
-import { toast } from "sonner";
-import { formatNode, formatNodes } from "@/lib/formatNode";
 import { Skeleton } from "@/components/ui/skeleton"
 
 
 
 const PageContent = () => {
   const router = useRouter();
-  const dispatch = useDispatch();
   const searchParams = useSearchParams(); 
+
+  const changes=useSelector((state:{value:number})=>state.value)
 
   const [isOpen, setIsOpen] = useState(false);
   const [nodeId, setNodeId] = useState("");
@@ -32,7 +30,6 @@ const PageContent = () => {
   const [mainImg, setMainImg] = useState("");
   const [isSubmitting, setSubmitting] = useState(false);
   
-  // Fetch search parameters
   useEffect(() => {
     const nodeIdParam = searchParams.get("nodeId");
     const modeParam = searchParams.get("mode");
@@ -42,31 +39,21 @@ const PageContent = () => {
   }, [searchParams]);
 
 
-  const storeNodes = useSelector((state: { nodes: Array<INode> }) => state.nodes);
-
   useEffect(() => {
-    if (!nodeId) return; 
+  if (!nodeId) return; 
+
+    getImagesForID(nodeId)
+    .then((res) => {
+      console.log("res",res)
+      const node=res.data.data;
+      setNode(node)
+      setMainImg(res.data.data.data.mainImg)
+    })
+    .catch((err) => {
+      console.log(err);
+    });
   
-    const filteredNode = storeNodes.find((node) => node.id === nodeId);
-    
-    if (filteredNode) {
-      setNode(filteredNode);
-      setMainImg(filteredNode.data?.mainImg || "");
-    }else{
-      getImagesForID(nodeId)
-      .then((res) => {
-        console.log("res",res)
-        const ONode=res.data.data;
-        const formatedNodes=formatNode(ONode);
-        console.log("fnode",formatedNodes)
-        setMainImg(formatedNodes.data?.mainImg);
-        setNode(formatedNodes);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    }
-  }, [nodeId, storeNodes]); 
+  }, [nodeId,changes]); 
 
   const handleSubmit = async (imgUrl: string) => {
     if (!nodeId) return;
@@ -76,13 +63,9 @@ const PageContent = () => {
       try {
         const res = await changeMainImg(imgUrl, nodeId);
         console.log(res)
-        const tree = res.data.data;
-        console.log("tree",tree)
-        const formatedNode=formatNodes(tree.nodes);
-        dispatch(addTree({nodes:formatedNode,edges:tree.edges,treeName:tree.treeName}))
+        const node = res.data.data;
         setMainImg(imgUrl);
-        
-        resolve(tree);
+        resolve(node);
       } catch (err) {
         const error = (err as AxiosError<ErrorResponse>).response?.data?.message;
         console.log(err);
@@ -105,9 +88,6 @@ const PageContent = () => {
       try {
         const res = await deleteImage(imgId, nodeId);
         const tree = res.data.data;
-        const formatedNode=formatNodes(tree.nodes);
-        dispatch(addTree({nodes:formatedNode,edges:tree.edges,treeName:tree.treeName}))
-        
         if (node) {
           const updatedImages = node.data.images.filter(img => img._id !== imgId);
           setNode({

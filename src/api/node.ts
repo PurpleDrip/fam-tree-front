@@ -38,3 +38,14 @@ export const deleteNode=async(id:string)=>{
 export const deleteImage=async(imgId:string,nodeId:string)=>{
     return axiosInstance.post("/node/deleteimgbyid",{imgId,nodeId})
 }
+
+export const editNode=async(nodeId:string,name:string,relation:string,gender:string,dob:string,description:string)=>{
+    return axiosInstance.put("/node/editnode",{
+        nodeId,
+        name,
+        relation,
+        gender,
+        dob,
+        description
+    })
+}

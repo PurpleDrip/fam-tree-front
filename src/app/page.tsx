@@ -1,12 +1,12 @@
 "use client";
 
-import CreateTree from '@/components/local/CreateTree';
-import Btn from '@/components/local/Button';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+
+import Btn from '@/components/local/Button';
+import { Button } from '@/components/ui/button';
 import { logout as logoutAction} from "@/redux/userSlice";
 import {  logoutUser } from '@/api/auth';
 import SearchTree from '@/components/local/SearchTree';
@@ -15,17 +15,7 @@ const Page = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const [openDialog, setOpenDialog] = useState(false);
   const isRegistered = useSelector((state: { isRegistered: boolean }) => state.isRegistered);
-  const treeName=useSelector((state:{treeName:string})=>state.treeName)
-
-  const createTreeHandler = () => {
-    if (isRegistered) {
-      setOpenDialog(prev => !prev);
-    } else {
-      router.push("/register"); 
-    }
-  };
 
   const handleLogout = async () => {
     dispatch(logoutAction());
@@ -41,13 +31,7 @@ const Page = () => {
         <div className="flex gap-4 items-center justify-center">
           {isRegistered ? (
             <>
-              {treeName? 
-              <>
                 <Btn onClick={() => router.push(`/tree`)}>View Tree</Btn>
-              </> : 
-              <>
-                <Btn onClick={createTreeHandler}>Create Tree</Btn>
-              </>}
               <button
                 onClick={handleLogout}
                 className="cursor-pointer text-sm px-4 py-2 rounded-full text-[#FF0000] bg-[#ff000018] border border-[#ff000018] hover:border-[#ff0000]"
@@ -80,23 +64,15 @@ const Page = () => {
     <h2 className="text-[#00FF00] text-3xl text-center font-thin mt-16">
       Start building your family tree today and create a lasting gift for your loved ones.
     </h2>
-    {treeName ? (
       <Button className="mt-2" onClick={() => router.push(`/tree`)}>
         View Tree
       </Button>
-    ) : (
-      <Button className="mt-2 cursor-pointer" onClick={createTreeHandler}>
-        Create Tree
-      </Button>
-    )}
   </div>
   <div className="border">
     <Image src="/images/hero_image1.jpeg" width="450" height="100" alt="Image of a family" />
   </div>
 </section>
-
-      <CreateTree open={openDialog} onOpenChange={setOpenDialog} />
-    </div>
+</div>
   );
 };
 

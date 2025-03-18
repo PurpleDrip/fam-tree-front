@@ -6,8 +6,8 @@ export const createTree = async (treeName:string) => {
     return axiosInstance.post("/addtree", {treeName});
 }
 
-export const getTree=async()=>{
-    return axiosInstance.get("/tree")
+export const fetchTree=async()=>{
+    return axiosInstance.get("/tree");
 }
 
 export const getTreeById=async(id:string)=>{

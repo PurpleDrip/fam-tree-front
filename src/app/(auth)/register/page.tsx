@@ -1,6 +1,12 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import Link from "next/link";
+import { AxiosError } from "axios";
+import { useDispatch} from "react-redux";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,32 +15,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
-import  Calendar  from "@/components/local/Calender";
 import { FcGoogle } from "react-icons/fc";
 import { RiFacebookCircleFill } from "react-icons/ri";
 import DrawerBox from "@/components/local/DrawerBox";
 import { registerUser } from "@/api/auth";
-import { AxiosError } from "axios";
-import { useDispatch} from "react-redux";
-import { addTree, registered } from "@/redux/userSlice";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-
-interface ErrorResponse {
-  message: string;
-}
+import {setInitialState, registered } from "@/redux/userSlice";
+import ErrorResponse from "@/types/errorMsg";
 
 export default function Register() {
   const dispatch=useDispatch();
@@ -44,34 +32,26 @@ export default function Register() {
   const [errorMsg, setErrorMsg] = React.useState<string>("");
   const [isSubmitting,setSubmitting]=React.useState(false)
 
-  const [gender, setGender] = React.useState("");
-  const [birthdate, setBirthdate] = React.useState<string | null>(null);
-
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSubmitting(true);
     const formData = new FormData(event.currentTarget);
     const data = Object.fromEntries(formData) as Record<string, string>;
-    if (gender) data.gender = gender;
-    if (birthdate) data.birthdate = birthdate;
 
     const sendData={
-      username:data.username,
+      treeName:data.treeName,
       password:data.password,
-      treeId:data.code,
-      gender:data.gender,
-      dob:data.birthdate,
-      mode:"default"
+      adminPassword:data.adminPassword,
+      owner:data.owner
     }
     const promise=new Promise(async (resolve,reject)=>{
       try{
         const response=await registerUser(sendData);
-        const tree=response.data.data;
-        console.log(tree);
-        dispatch(addTree(tree));
+        const data=response.data.data;
+        dispatch(setInitialState(data));
         dispatch(registered(true));
 
-        resolve(tree);
+        resolve(data);
 
         router.push("/")
       }catch(e){
@@ -89,7 +69,7 @@ export default function Register() {
     toast.promise(promise, {
       loading: "Loading...",
       success: "Registration Successful!",
-      error: (err) => err || "Login failed",
+      error: (err) => err || "Registration failed",
     });
   };
 
@@ -103,39 +83,20 @@ export default function Register() {
           <form onSubmit={handleSubmit} className="flex flex-col">
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="username">Username</Label>
-                <Input id="username" name="username" placeholder="Username" required />
-              </div>
-              <div className="flex flex-col space-y-1.5 min-w-max">
-                <Label htmlFor="birthdate">Date Of Birth</Label>
-                <Calendar 
-                  selectedDate={birthdate} 
-                  uponChange={(date) => setBirthdate(date || '')} 
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="gender">Gender</Label>
-                <Select onValueChange={setGender}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a gender"/>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup >
-                      <SelectLabel>Genders</SelectLabel>
-                      <SelectItem value="male">Male</SelectItem>
-                      <SelectItem value="female">Female</SelectItem>
-                      <SelectItem value="others">Others</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="treeName">Tree Name</Label>
+                <Input id="treeName" name="treeName" placeholder="Tree Name" required />
               </div>
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="owner">Owner</Label>
+                <Input id="owner" name="owner" placeholder="Owner of this tree" required />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="password">Set Password</Label>
                 <Input id="password" name="password" type="password" placeholder="Password" required />
               </div>
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="code">Fam Tree ID</Label>
-                <Input id="code" name="code" placeholder="Fam Tree ID (optional)." />
+                <Label htmlFor="adminPassword">Set Admin Password</Label>
+                <Input id="adminPassword" name="adminPassword" type="password" placeholder="Admin Password" required />
               </div>
             </div>
             <div>

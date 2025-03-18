@@ -8,10 +8,10 @@ import {
     Background,
   } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useSelector } from 'react-redux';
+
 import NodeComponent from "@/components/local/CustomNode";
-import {formatNodes} from "@/lib/formatNode"
 import {getTreeByName} from "@/api/tree"
+import TitleBarView from "@/components/local/TitleBarView"
 
 const ViewTree = () => {
     const params=useParams();
@@ -22,30 +22,29 @@ const ViewTree = () => {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
 
-    const storeNodes = useSelector(state => state.nodes);
-    const storeEdges = useSelector(state => state.edges);
 
     useEffect(() => {
         const fetchTree=async()=>{
             try{
                 const res=await getTreeByName(treeName);
+
                 const tree=res?.data.data;
-
-                const formatedNodes=formatNodes(tree.nodes)
-
-                const updatedNodes = formatedNodes.map(node => ({
+                console.log(tree)
+                const updatedNodes = tree.nodes.map(node => ({
                     ...node,
                     data: { ...node.data, mode: "view" }
                 }));
         
-                // ✅ Disable edge dragging
                 const updatedEdges = tree.edges.map(edge => ({
                     ...edge,
                     updatable: false, 
                     interactionWidth: 0, 
-                }))
+                })) 
 
-                setNodes(updatedNodes);
+                console.log(updatedNodes)
+                console.log(updatedEdges)
+
+                setNodes(updatedNodes.map(node=>({...node,id:node._id.toString()})));
                 setEdges(updatedEdges);
 
             }catch(err){
@@ -76,6 +75,7 @@ const ViewTree = () => {
                 <Background />
                 <Controls />
             </ReactFlow>
+            <TitleBarView treeName={treeName}/>
         </div>
     );
 };

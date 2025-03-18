@@ -1,8 +1,8 @@
 "use client";
 
-import NodeComponent from "@/components/local/CustomNode";
-import TitleBar from "@/components/local/TitleBar";
-import { useSelector, useDispatch } from "react-redux";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
+import { toast } from "sonner";
 import {
   ReactFlow,
   Controls,
@@ -12,132 +12,108 @@ import {
   addEdge,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useCallback, useEffect, useState, useRef } from "react";
-import { updateNodes, updateEdges } from "@/redux/userSlice";
-import {updateTree} from "@/api/tree"
+
+import NodeComponent from "@/components/local/CustomNode";
+import TitleBar from "@/components/local/TitleBar";
+import { fetchTree } from "@/api/tree";
 import Tools from "@/components/local/Tools"
-import { toast } from "sonner";
+import {debouncedUpdateCache} from "@/api/redis";
+
 
 function Flow() {
-  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
+  const [nodes, setNodes] = useState([]);
+  const [edges, setEdges] = useState([]);
+  const [treeName, setTreeName] = useState("");
+  const [treeId, setTreeId] = useState("");
 
-  const [isSubmitting, setSubmitting] = useState(false);
-  
-  // ✅ Fetch nodes and edges from Redux store
-  const reduxNodes = useSelector((state) => state.nodes) || [];
-  const reduxEdges = useSelector((state) => state.edges) || [];
-  const treeName = useSelector((state) => state.treeName) || "";
+  const nodeTypes = useMemo(() => ({ custom: NodeComponent }), []);
+  const changesMade=useSelector(state=>state.value);
 
-  // ✅ Initialize local state
-  const [nodes, setNodes] = useState(reduxNodes);
-  const [edges, setEdges] = useState(reduxEdges);
-  const [changes, setChanges] = useState(false); // Track unsaved changes
-  
-  // Keep track of original data for comparison
-  const originalNodesRef = useRef(JSON.stringify(reduxNodes));
-  const originalEdgesRef = useRef(JSON.stringify(reduxEdges));
-  
-  // Track if user has interacted
-  const userHasInteracted = useRef(false);
-
-  // ✅ Sync local state with Redux store when store updates
   useEffect(() => {
-    setNodes(reduxNodes);
-    setEdges(reduxEdges);
-    
-    // Store original data for comparison
-    if (!userHasInteracted.current) {
-      originalNodesRef.current = JSON.stringify(reduxNodes);
-      originalEdgesRef.current = JSON.stringify(reduxEdges);
-    }
-  }, [reduxNodes, reduxEdges]);
-
-  // Check for actual changes compared to original data
-  const checkForChanges = useCallback(() => {
-    const currentNodes = JSON.stringify(nodes);
-    const currentEdges = JSON.stringify(edges);
-    
-    // Only set changes flag if there's an actual difference from original data
-    const hasChanges = currentNodes !== originalNodesRef.current || 
-                       currentEdges !== originalEdgesRef.current;
-    
-    setChanges(hasChanges && userHasInteracted.current);
-  }, [nodes, edges]);
-
-  // ✅ Handle node changes
-  const onNodesChange = useCallback((changes) => {
-    userHasInteracted.current = true; // User has now interacted
-    
-    setNodes((nds) => {
-      const newNodes = applyNodeChanges(changes, nds);
-      return newNodes;
-    });
-    
-    // Use setTimeout to ensure state has updated before checking
-    setTimeout(checkForChanges, 0);
-  }, [checkForChanges]);
-
-  // ✅ Handle edge changes
-  const onEdgesChange = useCallback((changes) => {
-    userHasInteracted.current = true; // User has now interacted
-    
-    setEdges((eds) => {
-      const newEdges = applyEdgeChanges(changes, eds);
-      return newEdges;
-    });
-    
-    // Use setTimeout to ensure state has updated before checking
-    setTimeout(checkForChanges, 0);
-  }, [checkForChanges]);
-
-  // ✅ Handle new connections
-  const onConnect = useCallback((connection) => {
-    userHasInteracted.current = true; // User has now interacted
-    
-    setEdges((eds) => {
-      const newEdges = addEdge(connection, eds);
-      // Direct flag setting for connections since this is causing issues
-      setTimeout(() => {
-        if (userHasInteracted.current) {
-          setChanges(true);
-        }
-      }, 50);
-      return newEdges;
-    });
-  },[]);
-
-  // ✅ Save changes to Redux and DB
-  const handleSave =  () => {
-    setSubmitting(true);
-    const promise=new Promise(async (resolve,reject)=>{
-      dispatch(updateNodes(nodes)); // ✅ Update Redux
-      dispatch(updateEdges(edges)); // ✅ Update Redux
+    const getTree = async () => {
       try {
-        const res=await updateTree(nodes,edges);
+        const res = await fetchTree();
         console.log(res)
-        setChanges(false); // Reset change tracker
-        
-        // Update original references after save
-        originalNodesRef.current = JSON.stringify(nodes);
-        originalEdgesRef.current = JSON.stringify(edges);
-        
-        resolve(res);
+        if (res.data?.tree) {
+          setNodes(
+            res.data.tree.nodes.map((node) => ({
+              ...node,
+              id: node._id,
+            }))
+          );
+
+          setEdges(res.data.tree.edges);
+          setTreeName(res.data.tree.treeName);
+          setTreeId((prevId) => res.data.tree.treeId);
+
+          console.log("JSON",res.data.tree.treeId);
+        } else {
+          toast.error("Failed to load tree data");
+        }
       } catch (error) {
-        console.error("Failed to save changes:", error);
-        alert("Error saving changes.");
-        reject(error.response.data.message)
-      }finally{
-        setSubmitting(false);
+        console.error("Error fetching tree:", error);
+        toast.error("Error loading tree");
+      } finally {
+        setLoading(false);
       }
-    })
+    };
+    getTree();
+  }, [changesMade]);
 
-    toast.promise(promise, {
-      loading: "Saving...",
-      success: "Saved Progress Successfully!",
-      error: (err) => err || "Saving failed",
+  const onNodesChange = useCallback((changes) => {
+    setNodes((nds) => applyNodeChanges(changes, nds));
+  }, []); 
+  
+  const onEdgesChange = useCallback((changes) => {
+    setEdges((eds) => {
+      const updatedEdges = applyEdgeChanges(changes, eds);
+      debouncedUpdateCache(nodes, updatedEdges, treeName, treeId); 
+      return updatedEdges;
     });
+  }, [nodes, treeName, treeId]);
+  
+  const onConnect = useCallback((connection) => {
+    setEdges((eds) => {
+      const updatedEdges = addEdge(connection, eds);
+      debouncedUpdateCache(nodes, updatedEdges, treeName, treeId);
+      return updatedEdges;
+    });
+  }, [nodes, treeName, treeId]);
+  
+  const onNodeDragStop = useCallback((event, node) => {
+    setNodes((nds) => {
+      const updatedNodes = nds.map((n) =>
+        n.id === node.id ? { ...n, position: node.position } : n
+      );
+      debouncedUpdateCache(updatedNodes, edges, treeName, treeId);
+      return updatedNodes;
+    });
+  }, [edges, treeName, treeId]);
+  
+  const onEdgeContextMenu = useCallback((event, edge) => {
+    event.preventDefault();
+    setEdges((eds) => {
+      const updatedEdges = eds.filter((e) => e.id !== edge.id);
+      debouncedUpdateCache(nodes, updatedEdges, treeName, treeId);
+      return updatedEdges;
+    });
+    toast.success("Edge deleted successfully");
+  }, [nodes, treeName, treeId]);
 
-  };
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      debouncedUpdateCache.flush(); 
+    };
+  
+    window.addEventListener("beforeunload", handleBeforeUnload);
+  
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [nodes, edges, treeName, treeId]); 
+
+  if (loading) return <div className="h-screen flex items-center justify-center">Loading tree data...</div>;
 
   return (
     <div className="h-screen text-black bg-black relative">
@@ -147,7 +123,9 @@ function Flow() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        nodeTypes={{ custom: NodeComponent }}
+        onNodeDragStop={onNodeDragStop}
+        onEdgeContextMenu={onEdgeContextMenu}
+        nodeTypes={nodeTypes}
         fitView
       >
         <Background />
@@ -155,19 +133,7 @@ function Flow() {
       </ReactFlow>
 
       <TitleBar treeName={treeName} />
-      <Tools/>
-
-      {changes && (
-        <div className="bg-[#00ff00] absolute min-w-max top-16 left-1/2 px-3 py-2 rounded-xl -translate-x-1/2 -translate-y-1/2 z-50 flex items-center justify-center gap-3">
-          <h1 className="font-semibold text-md">Save the changes?</h1>
-          <button 
-            onClick={handleSave} 
-            className="bg-black text-white px-2 py-1 rounded-sm text-sm cursor-pointer" disabled={isSubmitting}
-          >
-            {isSubmitting? "Saving...":"Save"}
-          </button>
-        </div>
-      )}
+      <Tools />
     </div>
   );
 }
