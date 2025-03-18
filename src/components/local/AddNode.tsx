@@ -16,7 +16,6 @@ import { Textarea } from '../ui/textarea'
 import { Button } from '../ui/button'
 import axios, { AxiosError } from 'axios'
 import { useSelector } from 'react-redux'
-import { useDispatch } from 'react-redux'
 import { toast } from 'sonner'
 
 const URL=process.env.NEXT_PUBLIC_API_URL;
@@ -25,8 +24,6 @@ interface ErrorResponse {
     message: string;
   }
 const AddNode = () => {
-    const dispatch =useDispatch();
-
     const [errMsg, setErrMsg] = useState("");
     const [isSubmitting, setSubmitting] = useState(false);
 
@@ -34,7 +31,6 @@ const AddNode = () => {
     const [open, setOpen] = useState(false);
     const [gender, setGender] = useState("");
     const [birthdate, setBirthdate] = useState<string| null>(null);
-    const [role, setRole] = useState<string | undefined>("");
     const [formData, setFormData] = useState({
         name: "",
         relationship: "",
@@ -54,7 +50,6 @@ const AddNode = () => {
             });
             setGender("");
             setBirthdate("");
-            setRole("");
         }
     },[open])
 
@@ -78,7 +73,6 @@ const AddNode = () => {
         data.append("gender", gender);
         data.append("description", formData.description);
         data.append("dob", birthdate || "");
-        data.append("role", role || "");
         data.append("treeName", treeName);
         const position = { x: 20, y: 20 };
         data.append("position", JSON.stringify(position));
@@ -159,21 +153,6 @@ const AddNode = () => {
                             <div className="grid w-full gap-1.5">
                                 <Label htmlFor="description">Description</Label>
                                 <Textarea id="description" name="description" required placeholder="Description about the person." value={formData.description} onChange={handleChange} />
-                            </div>
-                            <div className="flex flex-col space-y-1.5">
-                                <Label htmlFor="role">Role</Label>
-                                <Select onValueChange={setRole} required>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select a role" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectLabel>Roles</SelectLabel>
-                                            <SelectItem value="admin">Admin</SelectItem>
-                                            <SelectItem value="viewer">Viewer</SelectItem>
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
                             </div>
                             <div className="grid w-full items-center gap-1.5">
                                 <Label htmlFor="images">Pictures</Label>

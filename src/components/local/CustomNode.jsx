@@ -61,7 +61,7 @@ const NodeComponent = ({
       { mode!=="view" &&
       <div className="flex items-center justify-center gap-2 mt-2">
         <EditNode node={data}/>
-        <DeleteNode id={data._id}/>
+        <DeleteNode id={id}/>
       </div>
       }
 

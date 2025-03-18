@@ -60,7 +60,6 @@ const AddImages = ({ nodeId, open, setIsOpen }: AddImagesProps) => {
         });
         const tree=response.data.data;
         resolve(tree);
-        const formatedNode=formatNodes(tree.nodes);
         setIsOpen(false);
       } catch (error) {
         console.error('Error uploading images:', error);
