@@ -1,20 +1,19 @@
-import IEdge from "@/types/edge";
-import INode from "@/types/node";
-import { ITree } from "@/types/tree";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface UserState {
     treeName: string;
     isRegistered: boolean;
     type:"admin" | "user" | null;
-    treeId:string
+    treeId:string,
+    value:0
 }
 
 const initialState: UserState = {
     isRegistered: false,
     treeName: "",
     type:null,
-    treeId:""
+    treeId:"",
+    value:0
 };
 
 export const userSlice = createSlice({
@@ -32,13 +31,17 @@ export const userSlice = createSlice({
             state.type=action.payload.type;
             state.treeId=action.payload.treeId;
         },
+        madeChanges:(state)=>{
+            state.value+=1;
+        }
     }
 });
 
 export const {
     registered,
     logout,
-    setInitialState
+    setInitialState,
+    madeChanges
 } = userSlice.actions;
 
 export default userSlice.reducer;
