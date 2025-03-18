@@ -11,64 +11,94 @@ import {
   addEdge,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useCallback, useEffect, useState } from "react";
-import {fetchTree} from "@/api/tree"
-import Tools from "@/components/local/Tools"
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { fetchTree } from "@/api/tree";
+import Tools from "@/components/local/Tools";
 import { toast } from "sonner";
+import updateCache from "@/api/redis";
 
 function Flow() {
   const [loading, setLoading] = useState(true);
-
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
   const [treeName, setTreeName] = useState("");
+  const [treeId, setTreeId] = useState("");
 
-  useEffect(()=>{
-    const getTree=async()=>{
-      const res=await fetchTree();
-      console.log(res)
-      setNodes(res.data.tree.nodes.map(node=>({...node,id:node._id})));
-      setEdges(res.data.tree.edges);
-      setTreeName(res.data.tree.treeName)
-      setLoading(false)
-    }
+  const nodeTypes = useMemo(() => ({ custom: NodeComponent }), []);
+
+  useEffect(() => {
+    const getTree = async () => {
+      try {
+        const res = await fetchTree();
+        console.log(res)
+        if (res.data?.tree) {
+          setNodes(
+            res.data.tree.nodes.map((node) => ({
+              ...node,
+              id: node._id,
+            }))
+          );
+
+          setEdges(res.data.tree.edges);
+          setTreeName(res.data.tree.treeName);
+          setTreeId((prevId) => res.data.tree.treeId);
+
+          console.log("JSON",res.data.tree.treeId);
+        } else {
+          toast.error("Failed to load tree data");
+        }
+      } catch (error) {
+        console.error("Error fetching tree:", error);
+        toast.error("Error loading tree");
+      } finally {
+        setLoading(false);
+      }
+    };
     getTree();
-  },[])
+  }, []);
 
   const onNodesChange = useCallback((changes) => {
-    setNodes((nds) => {
-      const newNodes = applyNodeChanges(changes, nds);
-      return newNodes;
-    });
-  }, []);
-
+    setNodes((nds) => applyNodeChanges(changes, nds));
+  }, []); 
+  
   const onEdgesChange = useCallback((changes) => {
     setEdges((eds) => {
-      const newEdges = applyEdgeChanges(changes, eds);
-      return newEdges;
+      const updatedEdges = applyEdgeChanges(changes, eds);
+      updateCache(nodes, updatedEdges, treeName, treeId); 
+      return updatedEdges;
     });
-  }, []);
-
+  }, [nodes, treeName, treeId]);
+  
   const onConnect = useCallback((connection) => {
     setEdges((eds) => {
-      const newEdges = addEdge(connection, eds);
-      return newEdges;
+      const updatedEdges = addEdge(connection, eds);
+      updateCache(nodes, updatedEdges, treeName, treeId);
+      return updatedEdges;
     });
-  },[]);
+  }, [nodes, treeName, treeId]);
+  
   const onNodeDragStop = useCallback((event, node) => {
     setNodes((nds) => {
-      console.log("Hi")
-      return nds.map((n) => {
-        if (n.id === node.id) {
-          return { ...n, position: node.position };
-        }
-        return n;
-      });
+      const updatedNodes = nds.map((n) =>
+        n.id === node.id ? { ...n, position: node.position } : n
+      );
+      updateCache(updatedNodes, edges, treeName, treeId);
+      return updatedNodes;
     });
-    
-  }, []);
+  }, [edges, treeName, treeId]);
+  
+  const onEdgeContextMenu = useCallback((event, edge) => {
+    event.preventDefault();
+    setEdges((eds) => {
+      const updatedEdges = eds.filter((e) => e.id !== edge.id);
+      updateCache(nodes, updatedEdges, treeName, treeId);
+      return updatedEdges;
+    });
+    toast.success("Edge deleted successfully");
+  }, [nodes, treeName, treeId]);
+  
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="h-screen flex items-center justify-center">Loading tree data...</div>;
 
   return (
     <div className="h-screen text-black bg-black relative">
@@ -79,7 +109,8 @@ function Flow() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onNodeDragStop={onNodeDragStop}
-        nodeTypes={{ custom: NodeComponent }}
+        onEdgeContextMenu={onEdgeContextMenu}
+        nodeTypes={nodeTypes}
         fitView
       >
         <Background />
@@ -87,7 +118,7 @@ function Flow() {
       </ReactFlow>
 
       <TitleBar treeName={treeName} />
-      <Tools/>
+      <Tools />
     </div>
   );
 }
