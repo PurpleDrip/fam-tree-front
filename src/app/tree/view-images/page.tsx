@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 import INode from "@/types/node";
 import { useDispatch } from "react-redux";
-import { addTree } from "@/redux/userSlice";
 import { AxiosError } from "axios";
 import ErrorResponse from "@/types/errorMsg";
 import { toast } from "sonner";

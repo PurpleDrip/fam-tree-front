@@ -14,7 +14,6 @@ import axios, { AxiosError } from 'axios'
 import { toast } from 'sonner'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
-import { addTree } from '@/redux/userSlice'
 import { formatNodes } from '@/lib/formatNode'
 
 interface ErrorResponse {
@@ -62,7 +61,6 @@ const AddImages = ({ nodeId, open, setIsOpen }: AddImagesProps) => {
         const tree=response.data.data;
         resolve(tree);
         const formatedNode=formatNodes(tree.nodes);
-        dispatch(addTree({nodes:formatedNode,edges:tree.edges,treeName:tree.treeName}))
         setIsOpen(false);
       } catch (error) {
         console.error('Error uploading images:', error);

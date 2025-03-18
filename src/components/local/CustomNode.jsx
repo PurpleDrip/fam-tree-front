@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Handle, Position } from "@xyflow/react";
 import { Mars, Transgender, Venus } from "lucide-react";
 
@@ -63,7 +63,7 @@ const NodeComponent = ({
       { mode!=="view" &&
       <div className="flex items-center justify-center gap-2 mt-2">
         <EditNode node={data}/>
-        <DeleteNode id={data.id}/>
+        <DeleteNode id={data._id}/>
       </div>
       }
 

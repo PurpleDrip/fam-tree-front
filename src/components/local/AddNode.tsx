@@ -17,7 +17,6 @@ import { Button } from '../ui/button'
 import axios, { AxiosError } from 'axios'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
-import { formatNodes } from '@/lib/formatNode'
 import { toast } from 'sonner'
 
 const URL=process.env.NEXT_PUBLIC_API_URL;
@@ -100,7 +99,8 @@ const AddNode = () => {
                     withCredentials:true,
                 });
                 const tree=response.data.data;
-                const formatedNodes=formatNodes(tree.nodes);
+
+                console.log(tree)
     
                 resolve(tree);
                 setOpen(false); 

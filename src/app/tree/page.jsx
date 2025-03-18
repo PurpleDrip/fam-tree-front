@@ -25,8 +25,11 @@ function Flow() {
 
   useEffect(()=>{
     const getTree=async()=>{
-      const tree=await fetchTree()
-      console.log(tree)
+      const res=await fetchTree();
+      console.log(res)
+      setNodes(res.data.tree.nodes.map(node=>({...node,id:node._id})));
+      setEdges(res.data.tree.edges);
+      setTreeName(res.data.tree.treeName)
       setLoading(false)
     }
     getTree();
@@ -37,8 +40,6 @@ function Flow() {
       const newNodes = applyNodeChanges(changes, nds);
       return newNodes;
     });
-    
-    setTimeout(checkForChanges, 0);
   }, []);
 
   const onEdgesChange = useCallback((changes) => {
@@ -54,20 +55,30 @@ function Flow() {
       return newEdges;
     });
   },[]);
+  const onNodeDragStop = useCallback((event, node) => {
+    setNodes((nds) => {
+      console.log("Hi")
+      return nds.map((n) => {
+        if (n.id === node.id) {
+          return { ...n, position: node.position };
+        }
+        return n;
+      });
+    });
+    
+  }, []);
 
   if (loading) return <div>Loading...</div>;
 
   return (
     <div className="h-screen text-black bg-black relative">
       <ReactFlow
-        nodes={nodes.map(node => ({
-          ...node,
-          id: String(node.id)
-        }))}
+        nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onNodeDragStop={onNodeDragStop}
         nodeTypes={{ custom: NodeComponent }}
         fitView
       >
