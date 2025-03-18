@@ -5,11 +5,10 @@ export const loginUser=async(data:{treeName:string,password:string})=>{
 }
 
 export const registerUser = async (userData: {
-    username: string;
-    password: string;
-    gender: string;
-    dob: string;
-    treeID?: string;
+  treeName:string,
+  password:string,
+  adminPassword:string,
+  owner:string
   }) => {
     return axiosInstance.post("/auth/register", userData);
   };
