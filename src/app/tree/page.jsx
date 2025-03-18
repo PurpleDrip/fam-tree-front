@@ -16,6 +16,7 @@ import { fetchTree } from "@/api/tree";
 import { toast } from "sonner";
 import Tools from "@/components/local/Tools"
 import {debouncedUpdateCache} from "@/api/redis";
+import { useSelector } from "react-redux";
 
 function Flow() {
   const [loading, setLoading] = useState(true);
@@ -25,6 +26,7 @@ function Flow() {
   const [treeId, setTreeId] = useState("");
 
   const nodeTypes = useMemo(() => ({ custom: NodeComponent }), []);
+  const changesMade=useSelector(state=>state.value);
 
   useEffect(() => {
     const getTree = async () => {
@@ -55,7 +57,7 @@ function Flow() {
       }
     };
     getTree();
-  }, []);
+  }, [changesMade]);
 
   const onNodesChange = useCallback((changes) => {
     setNodes((nds) => applyNodeChanges(changes, nds));

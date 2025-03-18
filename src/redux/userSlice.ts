@@ -5,7 +5,7 @@ export interface UserState {
     isRegistered: boolean;
     type:"admin" | "user" | null;
     treeId:string,
-    value:0
+    value:number
 }
 
 const initialState: UserState = {

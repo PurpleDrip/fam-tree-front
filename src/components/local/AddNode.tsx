@@ -17,13 +17,15 @@ import { Button } from '../ui/button'
 import axios, { AxiosError } from 'axios'
 import { useSelector } from 'react-redux'
 import { toast } from 'sonner'
+import { madeChanges } from '@/redux/userSlice'
+import { useDispatch } from 'react-redux'
+import ErrorResponse from '@/types/errorMsg'
 
 const URL=process.env.NEXT_PUBLIC_API_URL;
 
-interface ErrorResponse {
-    message: string;
-  }
 const AddNode = () => {
+    const dispatch=useDispatch();
+
     const [errMsg, setErrMsg] = useState("");
     const [isSubmitting, setSubmitting] = useState(false);
 
@@ -97,6 +99,7 @@ const AddNode = () => {
                 console.log(tree)
     
                 resolve(tree);
+                dispatch(madeChanges())
                 setOpen(false); 
             } catch (error) {
                 console.error("Error submitting form:", error);

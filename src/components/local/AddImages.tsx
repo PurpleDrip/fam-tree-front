@@ -13,12 +13,9 @@ import { Label } from "@/components/ui/label"
 import axios, { AxiosError } from 'axios'
 import { toast } from 'sonner'
 import { useSelector } from 'react-redux'
+import ErrorResponse from '@/types/errorMsg'
+import { madeChanges } from '@/redux/userSlice'
 import { useDispatch } from 'react-redux'
-import { formatNodes } from '@/lib/formatNode'
-
-interface ErrorResponse {
-  message: string;
-}
 
 interface AddImagesProps {
   nodeId: string;
@@ -28,7 +25,7 @@ interface AddImagesProps {
 
 const AddImages = ({ nodeId, open, setIsOpen }: AddImagesProps) => {
   const dispatch=useDispatch();
-
+  
   const treeName = useSelector((state: {treeName:string}) => state.treeName)
   const [images, setImages] = useState<FileList | null>(null)
   const [errMsg, setErrMsg] = useState("")
@@ -60,6 +57,7 @@ const AddImages = ({ nodeId, open, setIsOpen }: AddImagesProps) => {
         });
         const tree=response.data.data;
         resolve(tree);
+        dispatch(madeChanges())
         setIsOpen(false);
       } catch (error) {
         console.error('Error uploading images:', error);

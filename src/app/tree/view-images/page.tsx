@@ -22,6 +22,8 @@ const PageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams(); 
 
+  const changes=useSelector((state:{value:number})=>state.value)
+
   const [isOpen, setIsOpen] = useState(false);
   const [nodeId, setNodeId] = useState("");
   const [mode, setMode] = useState("");
@@ -52,7 +54,7 @@ const PageContent = () => {
       console.log(err);
     });
   
-  }, [nodeId]); 
+  }, [nodeId,changes]); 
 
   const handleSubmit = async (imgUrl: string) => {
     if (!nodeId) return;

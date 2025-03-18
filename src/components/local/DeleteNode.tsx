@@ -13,8 +13,12 @@ import { deleteNode } from "@/api/node";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import ErrorResponse from "@/types/errorMsg";
+import { madeChanges } from "@/redux/userSlice";
+import { useDispatch } from "react-redux";
 
 const DeleteNode = ({ id }: { id: string }) => {
+  const dispatch=useDispatch();
+  
   const [open, setOpen] = useState(false); 
   const [isSubmitting, setSubmitting] = useState(false);
 
@@ -28,8 +32,8 @@ const DeleteNode = ({ id }: { id: string }) => {
         const res = await deleteNode(id);
         console.log(res);
         setOpen(false); 
-        resolve(res);
-
+        resolve(res); 
+        dispatch(madeChanges())
       } catch (err) {
         console.log(err);
         const error=(err as AxiosError<ErrorResponse>).response?.data?.message;
