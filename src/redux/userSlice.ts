@@ -24,7 +24,11 @@ export const userSlice = createSlice({
             state.isRegistered = action.payload;
         },
         logout: (state) => {
-            state=initialState
+            state.treeName="";
+            state.type=null;
+            state.treeId="";
+            state.isRegistered=false;
+            state.value=0;
         },
         setInitialState:(state,action:PayloadAction<UserState>)=>{
             state.treeName=action.payload.treeName;

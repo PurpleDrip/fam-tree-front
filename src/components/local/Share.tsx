@@ -1,8 +1,5 @@
 import { Clipboard, Share2 } from 'lucide-react'
 import React from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Popover,
   PopoverContent,
@@ -19,6 +16,7 @@ const Share = ({treeName}:{treeName:string}) => {
             await navigator.clipboard.writeText(link);
             toast.success("Copied to Clipboard!")
         } catch (err) {
+          console.log(err)
             toast.error("Error Copying Link.")
         }
     };

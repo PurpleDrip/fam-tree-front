@@ -1,6 +1,12 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import Link from "next/link";
+import { AxiosError } from "axios";
+import { useDispatch} from "react-redux";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,32 +15,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
-import  Calendar  from "@/components/local/Calender";
 import { FcGoogle } from "react-icons/fc";
 import { RiFacebookCircleFill } from "react-icons/ri";
 import DrawerBox from "@/components/local/DrawerBox";
 import { registerUser } from "@/api/auth";
-import { AxiosError } from "axios";
-import { useDispatch} from "react-redux";
 import {setInitialState, registered } from "@/redux/userSlice";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-
-interface ErrorResponse {
-  message: string;
-}
+import ErrorResponse from "@/types/errorMsg";
 
 export default function Register() {
   const dispatch=useDispatch();

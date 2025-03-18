@@ -1,11 +1,12 @@
 "use client";
 
-import Btn from '@/components/local/Button';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+
+import Btn from '@/components/local/Button';
+import { Button } from '@/components/ui/button';
 import { logout as logoutAction} from "@/redux/userSlice";
 import {  logoutUser } from '@/api/auth';
 import SearchTree from '@/components/local/SearchTree';

@@ -1,6 +1,6 @@
 import React from 'react'
 import SearchTree from './SearchTree'
-import { ChevronLeft, Settings,  Share2 } from 'lucide-react'
+import { ChevronLeft, Settings} from 'lucide-react'
 import { useRouter } from 'next/navigation'; 
 import Share from './Share'
 

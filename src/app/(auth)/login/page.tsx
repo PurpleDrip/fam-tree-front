@@ -1,6 +1,12 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
+import { AxiosError } from "axios";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,16 +17,12 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
 import { RiFacebookCircleFill } from "react-icons/ri";
 import Drawer from "@/components/local/DrawerBox";
 import { loginUser } from "@/api/auth";
 import {registered, setInitialState } from "@/redux/userSlice";
-import { useDispatch } from "react-redux";
-import { useRouter } from "next/navigation";
-import { AxiosError } from "axios";
-import { toast } from "sonner";
+
 import ErrorResponse from "@/types/errorMsg";
 
 export default function Home() {
@@ -80,8 +82,8 @@ export default function Home() {
           <form onSubmit={handleSubmit}>
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="username" >Fam Tree Name</Label>
-                <Input id="username" name="treeName" placeholder="Fam Tree Name" autoComplete="current-username" required />
+                <Label htmlFor="treename" >Fam Tree Name</Label>
+                <Input id="treename" name="treeName" placeholder="Fam Tree Name" autoComplete="current-username" required />
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="password">Password</Label>
