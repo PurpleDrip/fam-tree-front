@@ -24,45 +24,57 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Pencil } from "lucide-react";
 import INode from "@/types/node";
+import { editNode } from "@/api/node";
+import { AxiosError } from "axios";
+import ErrorResponse from "@/types/errorMsg";
+import { useDispatch } from "react-redux";
+import { madeChanges } from "@/redux/userSlice";
+import { toast } from "sonner";
 
-const EditNode = ({ node }: { node: INode["data"] }) => {
+const EditNode = ({ node,nodeId }: { node: INode["data"],nodeId:string }) => {
+  const dispatch=useDispatch();
+
+  const [open, setOpen] = useState(false); 
+  const [isSubmitting, setSubmitting] = useState(false)
+
   const [name, setName] = useState(node.name);
   const [relation, setRelation] = useState(node.relation);
   const [dob, setBirthdate] = useState(node.dob);
   const [gender, setGender] = useState(node.gender);
-  const [role, setRole] = useState(node.role);
   const [description, setDescription] = useState(node.description);
-  const [loading, setLoading] = useState(false);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setSubmitting(true);
 
-    try {
-      const updatedNode = {
-        id: node.id,
-        name,
-        relation,
-        dob,
-        gender,
-        role,
-        description,
-      };
+    const promise=new Promise(async (resolve,reject)=>{
+      try{
+        const res=await editNode(nodeId,name,relation,gender,dob,description);
+        console.log(res.data.data);
 
-      console.log(updatedNode);
+        resolve(res)
+        dispatch(madeChanges());
+        setOpen(false)
+        }catch(err){
+          const error=(err as AxiosError<ErrorResponse>).response?.data.message;
+          console.log(error)
+          reject(error)
+        }finally{
+          setSubmitting(false);
+        }
+      })
       
-      alert("Node updated successfully!");
-    } catch (error) {
-      console.error("Error updating node:", error);
-      alert("Failed to update node.");
-    } finally {
-      setLoading(false);
-    }
+      toast.promise(promise, {
+        loading: "Updating...",
+        success: "Updated Node Successfully!",
+        error: (err) => err || "Updating Node failed",
+      });
   };
 
   return (
     <div>
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger className="bg-green-500 rounded-full px-4 py-1 cursor-pointer flex items-center justify-center text-sm gap-1 hover:bg-[#65b965]">
           <Pencil size={12} />
           Edit
@@ -142,32 +154,15 @@ const EditNode = ({ node }: { node: INode["data"] }) => {
                 />
               </div>
 
-              {/* Role Selection */}
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="role">Role</Label>
-                <Select value={role} onValueChange={setRole}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Roles</SelectLabel>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="viewer">Viewer</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-
               {/* Submit Button */}
               <Button
                 className={`bg-[#00ff0028] text-[#00ff00] hover:bg-[#00ff0041] ${
-                  loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+                  isSubmitting ? "cursor-not-allowed opacity-50" : "cursor-pointer"
                 }`}
                 type="submit"
-                disabled={loading}
+                disabled={isSubmitting}
               >
-                {loading ? "Updating..." : "Edit Node"}
+                {isSubmitting ? "Updating..." : "Edit Node"}
               </Button>
             </form>
           </DialogHeader>
