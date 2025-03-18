@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 import IEdge from "@/types/edge";
 import INode from "@/types/node";
 import { Redis } from "@upstash/redis";
@@ -23,7 +25,7 @@ const updateCache = async (
       });
       
       pipeline.expire(`tree:${treeId}`, 5 * 60);
-      pipeline.sadd("trees:modified", treeId);
+    //   pipeline.sadd("trees:modified", treeId);
       
       await pipeline.exec(); 
 
@@ -31,5 +33,7 @@ const updateCache = async (
     console.error(`Redis cache update failed for treeId: ${treeId}`, error);
   }
 };
+
+export const debouncedUpdateCache = _.debounce(updateCache, 500, { leading: false, trailing: true });
 
 export default updateCache;

@@ -13,9 +13,9 @@ import {
 import "@xyflow/react/dist/style.css";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchTree } from "@/api/tree";
-import Tools from "@/components/local/Tools";
 import { toast } from "sonner";
-import updateCache from "@/api/redis";
+import Tools from "@/components/local/Tools"
+import {debouncedUpdateCache} from "@/api/redis";
 
 function Flow() {
   const [loading, setLoading] = useState(true);
@@ -64,7 +64,7 @@ function Flow() {
   const onEdgesChange = useCallback((changes) => {
     setEdges((eds) => {
       const updatedEdges = applyEdgeChanges(changes, eds);
-      updateCache(nodes, updatedEdges, treeName, treeId); 
+      debouncedUpdateCache(nodes, updatedEdges, treeName, treeId); 
       return updatedEdges;
     });
   }, [nodes, treeName, treeId]);
@@ -72,7 +72,7 @@ function Flow() {
   const onConnect = useCallback((connection) => {
     setEdges((eds) => {
       const updatedEdges = addEdge(connection, eds);
-      updateCache(nodes, updatedEdges, treeName, treeId);
+      debouncedUpdateCache(nodes, updatedEdges, treeName, treeId);
       return updatedEdges;
     });
   }, [nodes, treeName, treeId]);
@@ -82,7 +82,7 @@ function Flow() {
       const updatedNodes = nds.map((n) =>
         n.id === node.id ? { ...n, position: node.position } : n
       );
-      updateCache(updatedNodes, edges, treeName, treeId);
+      debouncedUpdateCache(updatedNodes, edges, treeName, treeId);
       return updatedNodes;
     });
   }, [edges, treeName, treeId]);
@@ -91,12 +91,23 @@ function Flow() {
     event.preventDefault();
     setEdges((eds) => {
       const updatedEdges = eds.filter((e) => e.id !== edge.id);
-      updateCache(nodes, updatedEdges, treeName, treeId);
+      debouncedUpdateCache(nodes, updatedEdges, treeName, treeId);
       return updatedEdges;
     });
     toast.success("Edge deleted successfully");
   }, [nodes, treeName, treeId]);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      debouncedUpdateCache.flush(); 
+    };
   
+    window.addEventListener("beforeunload", handleBeforeUnload);
+  
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [nodes, edges, treeName, treeId]); 
 
   if (loading) return <div className="h-screen flex items-center justify-center">Loading tree data...</div>;
 
