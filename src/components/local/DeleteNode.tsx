@@ -13,10 +13,7 @@ import { deleteNode } from "@/api/node";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
-
-interface ErrorResponse {
-  message: string;
-}
+import ErrorResponse from "@/types/errorMsg";
 
 const DeleteNode = ({ id }: { id: string }) => {
   const dispatch = useDispatch();

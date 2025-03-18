@@ -33,7 +33,6 @@ const NodeComponent = ({
         </div>
         <div className="mt-6">
           <div className="flex items-center justify-start gap-2">
-            <h1>{id}</h1>
             <h3 className="font-bold text-left text-xl">{data?.name}</h3>
             <div className="text-white">
               {

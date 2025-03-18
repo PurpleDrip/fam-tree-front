@@ -14,14 +14,12 @@ import { useDispatch } from "react-redux";
 import { AxiosError } from "axios";
 import ErrorResponse from "@/types/errorMsg";
 import { toast } from "sonner";
-import { formatNode, formatNodes } from "@/lib/formatNode";
 import { Skeleton } from "@/components/ui/skeleton"
 
 
 
 const PageContent = () => {
   const router = useRouter();
-  const dispatch = useDispatch();
   const searchParams = useSearchParams(); 
 
   const [isOpen, setIsOpen] = useState(false);
@@ -31,7 +29,6 @@ const PageContent = () => {
   const [mainImg, setMainImg] = useState("");
   const [isSubmitting, setSubmitting] = useState(false);
   
-  // Fetch search parameters
   useEffect(() => {
     const nodeIdParam = searchParams.get("nodeId");
     const modeParam = searchParams.get("mode");
@@ -41,31 +38,21 @@ const PageContent = () => {
   }, [searchParams]);
 
 
-  const storeNodes = useSelector((state: { nodes: Array<INode> }) => state.nodes);
-
   useEffect(() => {
-    if (!nodeId) return; 
+  if (!nodeId) return; 
+
+    getImagesForID(nodeId)
+    .then((res) => {
+      console.log("res",res)
+      const node=res.data.data;
+      setNode(node)
+      setMainImg(res.data.data.data.mainImg)
+    })
+    .catch((err) => {
+      console.log(err);
+    });
   
-    const filteredNode = storeNodes.find((node) => node.id === nodeId);
-    
-    if (filteredNode) {
-      setNode(filteredNode);
-      setMainImg(filteredNode.data?.mainImg || "");
-    }else{
-      getImagesForID(nodeId)
-      .then((res) => {
-        console.log("res",res)
-        const node=res.data.data;
-        const formatedNodes=formatNode(node);
-        console.log("fnode",formatedNodes)
-        setMainImg(formatedNodes.data?.mainImg);
-        setNode(formatedNodes);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    }
-  }, [nodeId, storeNodes]); 
+  }, [nodeId]); 
 
   const handleSubmit = async (imgUrl: string) => {
     if (!nodeId) return;
@@ -75,13 +62,9 @@ const PageContent = () => {
       try {
         const res = await changeMainImg(imgUrl, nodeId);
         console.log(res)
-        const tree = res.data.data;
-        console.log("tree",tree)
-        const formatedNode=formatNodes(tree.nodes);
-        dispatch(addTree({nodes:formatedNode,edges:tree.edges,treeName:tree.treeName}))
+        const node = res.data.data;
         setMainImg(imgUrl);
-        
-        resolve(tree);
+        resolve(node);
       } catch (err) {
         const error = (err as AxiosError<ErrorResponse>).response?.data?.message;
         console.log(err);
@@ -104,9 +87,6 @@ const PageContent = () => {
       try {
         const res = await deleteImage(imgId, nodeId);
         const tree = res.data.data;
-        const formatedNode=formatNodes(tree.nodes);
-        dispatch(addTree({nodes:formatedNode,edges:tree.edges,treeName:tree.treeName}))
-        
         if (node) {
           const updatedImages = node.data.images.filter(img => img._id !== imgId);
           setNode({

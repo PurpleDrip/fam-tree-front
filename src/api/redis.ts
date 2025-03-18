@@ -25,7 +25,7 @@ const updateCache = async (
       });
       
       pipeline.expire(`tree:${treeId}`, 5 * 60);
-    //   pipeline.sadd("trees:modified", treeId);
+      pipeline.sadd("trees:modified", treeId);
       
       await pipeline.exec(); 
 
