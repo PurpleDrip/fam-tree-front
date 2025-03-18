@@ -64,7 +64,11 @@ const Page = () => {
     <h2 className="text-[#00FF00] text-3xl text-center font-thin mt-16">
       Start building your family tree today and create a lasting gift for your loved ones.
     </h2>
-      <Button className="mt-2" onClick={() => router.push(`/tree`)}>
+      <Button className="mt-2" onClick={() => {
+        isRegistered?
+          router.push(`/tree`) :
+          router.push('/register')
+        }}>
         View Tree
       </Button>
   </div>
