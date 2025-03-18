@@ -65,10 +65,12 @@ const Page = () => {
       Start building your family tree today and create a lasting gift for your loved ones.
     </h2>
       <Button className="mt-2" onClick={() => {
-        isRegistered?
-          router.push(`/tree`) :
-          router.push('/register')
-        }}>
+          if(isRegistered){
+            router.push('/tree')
+          }else{
+            router.push('/register')
+          }
+       }}>
         View Tree
       </Button>
   </div>
