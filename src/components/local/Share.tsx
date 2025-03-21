@@ -42,7 +42,7 @@ const Share = ({treeName}:{treeName:string}) => {
             </p>
           </div>
             <div className='border rounded-sm border-gray-700 w-full flex items-center justify-between p-2 px-4 text-sm gap-4'>
-                <code className='w-[18rem] text-ellipsis overflow-hidden whitespace-nowrap'>https://famtree.in/tree/view/{treeName}</code>
+                <code className='w-[18rem] text-ellipsis overflow-hidden whitespace-nowrap'>https://www.famtree.in/tree/view/{treeName}</code>
             </div>
             <div className='flex items-center justify-center gap-8'>
                 <FaWhatsapp size={36} className='cursor-pointer p-1 rounded-full bg-gray-900 text-white' onClick={shareOnWhatsApp}/>
